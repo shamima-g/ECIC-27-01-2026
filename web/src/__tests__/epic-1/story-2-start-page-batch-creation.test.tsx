@@ -122,7 +122,7 @@ describe('Epic 1, Story 2: Start Page - Batch Creation', () => {
       const user = userEvent.setup();
       const newBatch = createMockBatch({
         ReportDate: '2024-04-30',
-        WorkflowStatusName: 'Data Preparation',
+        LastExecutedActivityName: 'DataPreparation',
       });
 
       mockGet
@@ -146,7 +146,7 @@ describe('Epic 1, Story 2: Start Page - Batch Creation', () => {
       // Verify new batch is displayed
       await waitFor(() => {
         expect(screen.getByText('2024-04-30')).toBeInTheDocument();
-        expect(screen.getByText('Data Preparation')).toBeInTheDocument();
+        expect(screen.getByText('DataPreparation')).toBeInTheDocument();
       });
     });
   });
