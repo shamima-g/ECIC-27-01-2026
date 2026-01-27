@@ -17,6 +17,11 @@
 - [ ] Given the API call succeeds, when the batch is created, then I see a success message displayed on the page
 - [ ] Given a new batch is created, when the page refreshes, then I see the newly created batch in the "Current Batch" section with status "Data Preparation"
 
+### Business Rules
+- [ ] Given there is no active batch, when I view the Start Page, then the "Create New Batch" button is enabled
+- [ ] Given there is an active batch with LastExecutedActivityName = "PendingComplete", when I view the Start Page, then the "Create New Batch" button is enabled
+- [ ] Given there is an active batch with LastExecutedActivityName != "PendingComplete", when I view the Start Page, then the "Create New Batch" button is disabled
+
 ### Error Handling
 - [ ] Given I click "Create New Batch", when a batch for the current period already exists, then I see an error message "Report batch for this date already exists"
 - [ ] Given the API call fails, when an error occurs, then I see an error message with details
@@ -34,4 +39,7 @@
 ## Implementation Notes
 - Button directly calls POST `/monthly-report-batch` without opening a modal dialog
 - Use Shadcn `<Alert>` for success/error messages
+- **Business Rule:** Button is only enabled when:
+  - No active batch exists, OR
+  - Active batch has `LastExecutedActivityName` = "PendingComplete"
 - **Note:** The home page (`web/src/app/page.tsx`) was created in the "Home Page Setup" story. This story enhances that existing page with batch creation functionality.

@@ -137,6 +137,11 @@ export default function HomePage() {
 
   const activeBatch = batches.find((b) => !b.FinishedAt);
 
+  // Business rule: Can only create new batch if no active batch
+  // or active batch is in PendingComplete state
+  const canCreateBatch =
+    !activeBatch || activeBatch.LastExecutedActivityName === 'PendingComplete';
+
   // For batch history, show all batches sorted by date descending
   // When there's only ONE batch and it's active, don't show it in history
   // (it's already shown prominently in Current Status)
@@ -400,9 +405,17 @@ export default function HomePage() {
 
           {/* Create New Batch Button */}
           <div className="mt-4">
-            <Button onClick={handleCreateBatch} disabled={isCreating}>
+            <Button
+              onClick={handleCreateBatch}
+              disabled={isCreating || !canCreateBatch}
+            >
               {isCreating ? 'Creating...' : 'Create New Batch'}
             </Button>
+            {!canCreateBatch && activeBatch && (
+              <p className="mt-2 text-sm text-muted-foreground">
+                Cannot create new batch while current batch is in progress
+              </p>
+            )}
             {createError && (
               <div
                 role="alert"

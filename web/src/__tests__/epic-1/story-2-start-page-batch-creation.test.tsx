@@ -151,12 +151,67 @@ describe('Epic 1, Story 2: Start Page - Batch Creation', () => {
     });
   });
 
-  describe('Error Handling', () => {
-    it('shows error when creating batch with duplicate report date', async () => {
-      const user = userEvent.setup();
-      const existingBatch = createMockBatch({ ReportDate: '2024-03-31' });
+  describe('Business Rules', () => {
+    it('enables Create button when there is no active batch', async () => {
+      mockGet.mockResolvedValue(createMockBatches());
 
-      mockGet.mockResolvedValue(createMockBatches([existingBatch]));
+      render(<HomePage />);
+
+      await waitFor(() => {
+        const createButton = screen.getByRole('button', {
+          name: /Create New Batch/i,
+        });
+        expect(createButton).not.toBeDisabled();
+      });
+    });
+
+    it('enables Create button when active batch has LastExecutedActivityName = "PendingComplete"', async () => {
+      const completedBatch = createMockBatch({
+        LastExecutedActivityName: 'PendingComplete',
+        FinishedAt: null,
+      });
+      mockGet.mockResolvedValue(createMockBatches([completedBatch]));
+
+      render(<HomePage />);
+
+      await waitFor(() => {
+        const createButton = screen.getByRole('button', {
+          name: /Create New Batch/i,
+        });
+        expect(createButton).not.toBeDisabled();
+      });
+    });
+
+    it('disables Create button when active batch is not in PendingComplete state', async () => {
+      const activeBatch = createMockBatch({
+        LastExecutedActivityName: 'DataPreparation',
+        FinishedAt: null,
+      });
+      mockGet.mockResolvedValue(createMockBatches([activeBatch]));
+
+      render(<HomePage />);
+
+      await waitFor(() => {
+        const createButton = screen.getByRole('button', {
+          name: /Create New Batch/i,
+        });
+        expect(createButton).toBeDisabled();
+      });
+
+      // Should show message explaining why button is disabled
+      expect(
+        screen.getByText(
+          /Cannot create new batch while current batch is in progress/i,
+        ),
+      ).toBeInTheDocument();
+    });
+  });
+
+  describe('Error Handling', () => {
+    it('shows error when API returns duplicate batch error', async () => {
+      const user = userEvent.setup();
+      // No active batch, so button should be enabled
+      mockGet.mockResolvedValue(createMockBatches());
       mockPost.mockRejectedValue(
         new Error('Report batch for this date already exists'),
       );
