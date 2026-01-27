@@ -14,10 +14,10 @@
 
 ### Status Display
 - [ ] Given there is an active report batch, when I view the Start Page, then I see the batch's ReportDate prominently displayed
-- [ ] Given an active batch exists, when I view the status section, then I see the current workflow state (e.g., "Data Preparation", "First Approval", "Second Approval", etc.)
-- [ ] Given the batch is in "Data Preparation", when I view the page, then the status badge is displayed in blue
+- [ ] Given an active batch exists, when I view the status section, then I see the `LastExecutedActivityName` (e.g., "DataPreparation", "L1Approval", "PendingComplete", etc.)
+- [ ] Given the batch is in "DataPreparation", when I view the page, then the status badge is displayed in blue
 - [ ] Given the batch is in an approval stage, when I view the page, then the status badge is displayed in yellow
-- [ ] Given the batch is "Complete", when I view the page, then the status badge is displayed in green
+- [ ] Given the batch is "PendingComplete", when I view the page, then the status badge is displayed in green
 
 ### Progress Indicator
 - [ ] Given an active batch exists, when I view the page, then I see a visual progress indicator showing completed and remaining stages
@@ -37,5 +37,6 @@
 - Use Shadcn `<Card>` to display the current batch status
 - Use Shadcn `<Badge>` with color variants for status indicators
 - Use Shadcn `<Progress>` component for the workflow stage indicator
-- Map WorkflowStatusName to user-friendly display names and colors
+- **Status Badge:** Display `LastExecutedActivityName` (not `WorkflowStatusName`) to show the actual activity state
+- Map activity names to colors for visual distinction
 - **Note:** The home page (`web/src/app/page.tsx`) was created in the "Home Page Setup" story. This story enhances that existing page with status display functionality.

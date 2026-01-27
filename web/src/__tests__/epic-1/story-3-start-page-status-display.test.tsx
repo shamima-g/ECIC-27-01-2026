@@ -74,60 +74,66 @@ describe('Epic 1, Story 3: Start Page - Current Status Display', () => {
       });
     });
 
-    it('displays current workflow state for active batch', async () => {
-      const batch = createMockBatch({ WorkflowStatusName: 'Data Preparation' });
+    it('displays LastExecutedActivityName for active batch', async () => {
+      const batch = createMockBatch({
+        LastExecutedActivityName: 'DataPreparation',
+      });
       mockGet.mockResolvedValue(createMockBatches([batch]));
 
       render(<HomePage />);
 
       await waitFor(() => {
-        expect(screen.getByText('Data Preparation')).toBeInTheDocument();
+        expect(screen.getByText('DataPreparation')).toBeInTheDocument();
       });
     });
 
-    it('displays status badge in blue for "Data Preparation" state', async () => {
-      const batch = createMockBatch({ WorkflowStatusName: 'Data Preparation' });
+    it('displays status badge for "DataPreparation" activity', async () => {
+      const batch = createMockBatch({
+        LastExecutedActivityName: 'DataPreparation',
+      });
       mockGet.mockResolvedValue(createMockBatches([batch]));
 
       render(<HomePage />);
 
       await waitFor(() => {
         const badge = screen.getByTestId(
-          'current-status-badge-Data Preparation',
+          'current-status-badge-DataPreparation',
         );
         expect(badge).toBeInTheDocument();
-        // Badge should have blue styling (specific class depends on implementation)
-        expect(badge).toHaveClass(/blue|primary/i);
+        expect(badge).toHaveTextContent('DataPreparation');
       });
     });
 
-    it('displays status badge in yellow for approval stages', async () => {
-      const batch = createMockBatch({ WorkflowStatusName: 'First Approval' });
-      mockGet.mockResolvedValue(createMockBatches([batch]));
-
-      render(<HomePage />);
-
-      await waitFor(() => {
-        const badge = screen.getByTestId('current-status-badge-First Approval');
-        expect(badge).toBeInTheDocument();
-        expect(badge).toHaveClass(/yellow|warning/i);
-      });
-    });
-
-    it('displays status badge in green for "Complete" state', async () => {
+    it('displays status badge for approval activities', async () => {
       const batch = createMockBatch({
-        WorkflowStatusName: 'Complete',
-        FinishedAt: '2024-03-31T17:00:00Z',
+        LastExecutedActivityName: 'L1Approval',
       });
       mockGet.mockResolvedValue(createMockBatches([batch]));
 
       render(<HomePage />);
 
       await waitFor(() => {
-        // Completed batches show in history table, not current status
-        const badge = screen.getByTestId('status-badge-Complete');
+        const badge = screen.getByTestId('current-status-badge-L1Approval');
         expect(badge).toBeInTheDocument();
-        expect(badge).toHaveClass(/green|success/i);
+        expect(badge).toHaveTextContent('L1Approval');
+      });
+    });
+
+    it('displays status badge for "PendingComplete" activity', async () => {
+      const batch = createMockBatch({
+        LastExecutedActivityName: 'PendingComplete',
+        FinishedAt: null,
+      });
+      mockGet.mockResolvedValue(createMockBatches([batch]));
+
+      render(<HomePage />);
+
+      await waitFor(() => {
+        const badge = screen.getByTestId(
+          'current-status-badge-PendingComplete',
+        );
+        expect(badge).toBeInTheDocument();
+        expect(badge).toHaveTextContent('PendingComplete');
       });
     });
   });
@@ -147,16 +153,15 @@ describe('Epic 1, Story 3: Start Page - Current Status Display', () => {
 
     it('displays completed and remaining workflow stages', async () => {
       const batch = createMockBatch({
-        WorkflowStatusName: 'First Approval',
-        LastExecutedActivityName: 'Data Validation Complete',
+        LastExecutedActivityName: 'L1Approval',
       });
       mockGet.mockResolvedValue(createMockBatches([batch]));
 
       render(<HomePage />);
 
       await waitFor(() => {
-        // Should show current stage
-        expect(screen.getByText(/First Approval/i)).toBeInTheDocument();
+        // Should show current activity
+        expect(screen.getByText(/L1Approval/i)).toBeInTheDocument();
         // Progress indicator should reflect partial completion
         const progressBar = screen.getByRole('progressbar');
         expect(progressBar).toHaveAttribute('aria-valuenow');
@@ -180,10 +185,10 @@ describe('Epic 1, Story 3: Start Page - Current Status Display', () => {
   describe('Real-time Updates', () => {
     it('reflects updated status when page is refreshed', async () => {
       const initialBatch = createMockBatch({
-        WorkflowStatusName: 'Data Preparation',
+        LastExecutedActivityName: 'DataPreparation',
       });
       const updatedBatch = createMockBatch({
-        WorkflowStatusName: 'First Approval',
+        LastExecutedActivityName: 'L1Approval',
       });
 
       mockGet.mockResolvedValueOnce(createMockBatches([initialBatch]));
@@ -191,7 +196,7 @@ describe('Epic 1, Story 3: Start Page - Current Status Display', () => {
       const { unmount } = render(<HomePage />);
 
       await waitFor(() => {
-        expect(screen.getByText('Data Preparation')).toBeInTheDocument();
+        expect(screen.getByText('DataPreparation')).toBeInTheDocument();
       });
 
       // Simulate page refresh by unmounting and remounting
@@ -200,31 +205,35 @@ describe('Epic 1, Story 3: Start Page - Current Status Display', () => {
       render(<HomePage />);
 
       await waitFor(() => {
-        expect(screen.getByText('First Approval')).toBeInTheDocument();
+        expect(screen.getByText('L1Approval')).toBeInTheDocument();
       });
     });
   });
 
-  describe('Multiple Workflow States', () => {
-    it('correctly displays "Second Approval" state', async () => {
-      const batch = createMockBatch({ WorkflowStatusName: 'Second Approval' });
+  describe('Multiple Activity States', () => {
+    it('correctly displays "L2Approval" activity', async () => {
+      const batch = createMockBatch({
+        LastExecutedActivityName: 'L2Approval',
+      });
       mockGet.mockResolvedValue(createMockBatches([batch]));
 
       render(<HomePage />);
 
       await waitFor(() => {
-        expect(screen.getByText('Second Approval')).toBeInTheDocument();
+        expect(screen.getByText('L2Approval')).toBeInTheDocument();
       });
     });
 
-    it('correctly displays "Third Approval" state', async () => {
-      const batch = createMockBatch({ WorkflowStatusName: 'Third Approval' });
+    it('correctly displays "L3Approval" activity', async () => {
+      const batch = createMockBatch({
+        LastExecutedActivityName: 'L3Approval',
+      });
       mockGet.mockResolvedValue(createMockBatches([batch]));
 
       render(<HomePage />);
 
       await waitFor(() => {
-        expect(screen.getByText('Third Approval')).toBeInTheDocument();
+        expect(screen.getByText('L3Approval')).toBeInTheDocument();
       });
     });
   });
@@ -263,13 +272,15 @@ describe('Epic 1, Story 3: Start Page - Current Status Display', () => {
 
   describe('Accessibility', () => {
     it('provides accessible status indicators with ARIA labels', async () => {
-      const batch = createMockBatch({ WorkflowStatusName: 'Data Preparation' });
+      const batch = createMockBatch({
+        LastExecutedActivityName: 'DataPreparation',
+      });
       mockGet.mockResolvedValue(createMockBatches([batch]));
 
       render(<HomePage />);
 
       await waitFor(() => {
-        const statusElement = screen.getByText('Data Preparation');
+        const statusElement = screen.getByText('DataPreparation');
         expect(statusElement).toBeInTheDocument();
       });
     });

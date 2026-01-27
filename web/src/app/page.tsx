@@ -376,11 +376,11 @@ export default function HomePage() {
                   {activeBatch.ReportDate}
                 </span>
                 <span
-                  data-status={activeBatch.WorkflowStatusName}
-                  data-testid={`current-status-badge-${activeBatch.WorkflowStatusName}`}
-                  className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColorClass(activeBatch.WorkflowStatusName)}`}
+                  data-status={activeBatch.LastExecutedActivityName}
+                  data-testid={`current-status-badge-${activeBatch.LastExecutedActivityName}`}
+                  className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColorClass(activeBatch.LastExecutedActivityName)}`}
                 >
-                  {activeBatch.WorkflowStatusName}
+                  {activeBatch.LastExecutedActivityName}
                 </span>
               </div>
               <div>
