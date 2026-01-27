@@ -96,11 +96,8 @@ describe('Epic 1, Story 3: Start Page - Current Status Display', () => {
       render(<HomePage />);
 
       await waitFor(() => {
-        const badge = screen.getByTestId(
-          'current-status-badge-DataPreparation',
-        );
-        expect(badge).toBeInTheDocument();
-        expect(badge).toHaveTextContent('DataPreparation');
+        // Verify the status badge text is visible to the user
+        expect(screen.getByText('DataPreparation')).toBeInTheDocument();
       });
     });
 
@@ -113,9 +110,8 @@ describe('Epic 1, Story 3: Start Page - Current Status Display', () => {
       render(<HomePage />);
 
       await waitFor(() => {
-        const badge = screen.getByTestId('current-status-badge-L1Approval');
-        expect(badge).toBeInTheDocument();
-        expect(badge).toHaveTextContent('L1Approval');
+        // Verify the approval status is visible to the user
+        expect(screen.getByText('L1Approval')).toBeInTheDocument();
       });
     });
 
@@ -129,11 +125,8 @@ describe('Epic 1, Story 3: Start Page - Current Status Display', () => {
       render(<HomePage />);
 
       await waitFor(() => {
-        const badge = screen.getByTestId(
-          'current-status-badge-PendingComplete',
-        );
-        expect(badge).toBeInTheDocument();
-        expect(badge).toHaveTextContent('PendingComplete');
+        // Verify the PendingComplete status is visible to the user
+        expect(screen.getByText('PendingComplete')).toBeInTheDocument();
       });
     });
   });

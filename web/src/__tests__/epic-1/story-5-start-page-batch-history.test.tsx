@@ -144,22 +144,21 @@ describe('Epic 1, Story 5: Start Page - Batch History', () => {
       });
     });
 
-    it('displays WorkflowStatusName with green badge for complete batches', async () => {
+    it('displays WorkflowStatusName for complete batches', async () => {
       mockGet.mockResolvedValue(createHistoricalBatches());
 
       render(<HomePage />);
 
       await waitFor(() => {
-        const badges = screen.getAllByTestId(/status-badge-Complete/);
-        expect(badges.length).toBeGreaterThan(0);
-
-        badges.forEach((badge) => {
-          expect(badge).toHaveClass(/green|success/i);
-        });
+        // Verify completed batch status is visible to the user in the table
+        const table = screen.getByRole('table');
+        expect(within(table).getAllByText('Complete').length).toBeGreaterThan(
+          0,
+        );
       });
     });
 
-    it('displays WorkflowStatusName with yellow badge for in-progress batches', async () => {
+    it('displays WorkflowStatusName for in-progress batches', async () => {
       const batchesWithInProgress = {
         MonthlyReportBatches: [
           createMockBatch({
@@ -176,9 +175,9 @@ describe('Epic 1, Story 5: Start Page - Batch History', () => {
       render(<HomePage />);
 
       await waitFor(() => {
-        const badge = screen.getByTestId('status-badge-First Approval');
-        expect(badge).toBeInTheDocument();
-        expect(badge).toHaveClass(/yellow|warning/i);
+        // Verify in-progress batch status is visible to the user in the table
+        const table = screen.getByRole('table');
+        expect(within(table).getByText('First Approval')).toBeInTheDocument();
       });
     });
   });

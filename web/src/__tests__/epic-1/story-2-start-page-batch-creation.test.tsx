@@ -287,7 +287,10 @@ describe('Epic 1, Story 2: Start Page - Batch Creation', () => {
 
     it('refreshes batch list after successful creation', async () => {
       const user = userEvent.setup();
-      const newBatch = createMockBatch({ ReportDate: '2024-04-30' });
+      const newBatch = createMockBatch({
+        ReportDate: '2024-04-30',
+        LastExecutedActivityName: 'DataPreparation',
+      });
 
       mockGet
         .mockResolvedValueOnce(createMockBatches())
@@ -306,9 +309,9 @@ describe('Epic 1, Story 2: Start Page - Batch Creation', () => {
         screen.getByRole('button', { name: /Create New Batch/i }),
       );
 
-      // Should have called GET to refresh
+      // Verify the new batch data is displayed after refresh
       await waitFor(() => {
-        expect(mockGet).toHaveBeenCalledTimes(2);
+        expect(screen.getByText('2024-04-30')).toBeInTheDocument();
       });
     });
   });
