@@ -1,0 +1,46 @@
+# Story: File Validation and Error Viewing
+
+**Epic:** File Import Management
+**Story:** 4 of 6
+**Wireframe:** `../../wireframes/screen-4-file-upload-modal.md`
+
+## User Story
+
+**As an** Operations Lead or Analyst
+**I want** to view validation errors for failed files
+**So that** I can understand what went wrong and fix the issues
+
+## Acceptance Criteria
+
+### Error Display
+- [ ] Given a file has failed validation, when I open the file upload modal, then I see a "View Errors" button
+- [ ] Given I click "View Errors", when the errors section expands, then I see a list of validation faults with error codes and descriptions
+- [ ] Given validation errors are displayed, when I view each error, then I see the FaultedActivityName, Message, and Exception details
+- [ ] Given there are many errors, when I view the error list, then errors are paginated (10 per page)
+
+### Error Export
+- [ ] Given validation errors are displayed, when I click "Export Errors to Excel", then an Excel file is downloaded containing all error details
+
+### Retry Validation
+- [ ] Given a file has failed validation, when I click "Retry Validation", then the system re-runs validation on the existing file
+- [ ] Given I retry validation, when the process completes successfully, then the status updates to "Complete" and errors are cleared
+- [ ] Given I retry validation, when the process fails again, then I see updated error messages
+
+### Clear Messaging
+- [ ] Given a file has validation errors, when I view the error summary, then I see a count of total errors (e.g., "15 validation errors found")
+- [ ] Given validation fails due to format issues, when I view the errors, then I see clear guidance on the expected format
+
+## API Endpoints (from OpenAPI spec)
+
+| Method | Endpoint | Purpose |
+|--------|----------|---------|
+| GET | `/file/faults?FileLogId={id}` | Get all faults for uploaded file |
+| POST | `/file?FileLogId={id}&FileSettingId={id}&FileFormatId={id}` | Retry validation for a file |
+
+## Implementation Notes
+- Use Shadcn `<Accordion>` to show/hide error details in the modal
+- Use Shadcn `<Table>` to display validation errors
+- Use Shadcn `<Alert>` with destructive variant for error summary
+- Implement Excel export using a library like `xlsx` or `exceljs`
+- Show loading spinner during retry validation
+- Display user-friendly error messages (translate technical errors if needed)

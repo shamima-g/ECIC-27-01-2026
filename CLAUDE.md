@@ -4,13 +4,32 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Template repository** for building frontend applications with:
-- Next.js 16 (App Router) + React 19 + TypeScript 5 (strict)
-- Tailwind CSS 4 + Shadcn UI (via MCP server)
-- Vitest + React Testing Library
-- Production-ready API client for OpenAPI-defined REST endpoints
+**InvestInsight Portfolio Reporting Platform** - A comprehensive portfolio reporting and data stewardship application designed to help investment teams prepare accurate weekly and monthly reports from multiple data sources.
 
-Users clone this template and use Claude Code to generate features, components, and API integrations.
+**Tech Stack:** Next.js 16 (App Router) + React 19 + TypeScript 5 (strict) + Tailwind CSS 4 + Shadcn UI
+
+**Backend APIs:** Defined in three OpenAPI specifications:
+- `documentation/MonthlyAPIDefinition.yaml` - Monthly process, approvals, data checks, index prices, report comments
+- `documentation/FileImporterAPIDefinition.yaml` - File uploads, validations, instruments, durations, betas, credit ratings
+- `documentation/DataMaintenanceAPIDefinition.yaml` - Reference data (countries, currencies, portfolios, asset managers, benchmarks, indexes)
+
+**Planned Epics:**
+1. Foundation & Start Page - Home page, navigation, batch management
+2. File Import Management - Portfolio/other file uploads with validation
+3. Data Confirmation & Validation - Multi-tab completeness checks
+4. Instruments & Index Prices Maintenance - Core reference data
+5. Risk Data Maintenance - Duration, YTM, Beta, Credit Rating screens
+6. Report Comments - Commentary capture
+7. Multi-Level Approvals - Three-level approval workflow (L1, L2, L3)
+8. Process Logs & Administration - Logs, user/role/page access management
+9. Reference Data Management - CRUD for countries, currencies, portfolios, indexes, asset managers, benchmarks
+
+**Key Features:**
+- Multi-level approval workflow with state-based access control
+- Full audit trails for all data changes
+- Matrix-based file upload tracking
+- Comprehensive data validation and error handling
+- Role-based access control
 
 ## Repository Structure
 
