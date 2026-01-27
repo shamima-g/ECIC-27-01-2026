@@ -20,14 +20,16 @@ vi.mock('@/lib/api/client', () => ({
   post: vi.fn(),
   put: vi.fn(),
   del: vi.fn(),
+  monthlyGet: vi.fn(),
+  monthlyPost: vi.fn(),
 }));
 
-import { get, post } from '@/lib/api/client';
+import { monthlyGet, monthlyPost } from '@/lib/api/client';
 // This import WILL FAIL until implemented - that's the point of TDD!
 import HomePage from '@/app/page';
 
-const mockGet = get as ReturnType<typeof vitest.fn>;
-const mockPost = post as ReturnType<typeof vitest.fn>;
+const mockGet = monthlyGet as ReturnType<typeof vitest.fn>;
+const mockPost = monthlyPost as ReturnType<typeof vitest.fn>;
 
 // Type definitions for mock data
 interface MockBatch {
@@ -62,9 +64,10 @@ describe('Epic 1, Story 2: Start Page - Batch Creation', () => {
   });
 
   describe('Happy Path', () => {
-    it('opens create batch modal when "Create New Batch" button is clicked', async () => {
+    it('directly calls API when "Create New Batch" button is clicked (no modal)', async () => {
       const user = userEvent.setup();
       mockGet.mockResolvedValue(createMockBatches());
+      mockPost.mockResolvedValue({ message: 'Success' });
 
       render(<HomePage />);
 
@@ -79,20 +82,21 @@ describe('Epic 1, Story 2: Start Page - Batch Creation', () => {
       });
       await user.click(createButton);
 
-      // Modal should open with report date input
-      expect(screen.getByRole('dialog')).toBeInTheDocument();
-      expect(screen.getByLabelText(/Report Date/i)).toBeInTheDocument();
+      // API should be called directly (no modal)
+      await waitFor(() => {
+        expect(mockPost).toHaveBeenCalledWith('/monthly-report-batch');
+      });
+
+      // No modal dialog should appear
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
 
-    it('creates a new batch when user submits valid date', async () => {
+    it('displays success message after batch is created', async () => {
       const user = userEvent.setup();
       mockGet.mockResolvedValue(createMockBatches());
-      mockPost.mockResolvedValueOnce({
+      mockPost.mockResolvedValue({
         message: 'Report batch created successfully',
       });
-      mockGet.mockResolvedValueOnce(
-        createMockBatches([createMockBatch({ ReportDate: '2024-04-30' })]),
-      );
 
       render(<HomePage />);
 
@@ -102,30 +106,16 @@ describe('Epic 1, Story 2: Start Page - Batch Creation', () => {
         ).toBeInTheDocument();
       });
 
-      // Open modal
       await user.click(
         screen.getByRole('button', { name: /Create New Batch/i }),
       );
 
-      // Enter report date
-      const dateInput = screen.getByLabelText(/Report Date/i);
-      await user.clear(dateInput);
-      await user.type(dateInput, '2024-04-30');
-
-      // Submit form
-      const submitButton = screen.getByRole('button', { name: /Create/i });
-      await user.click(submitButton);
-
-      // Verify API calls
-      await waitFor(() => {
-        expect(mockPost).toHaveBeenCalledWith('/monthly-report-batch');
-        expect(mockPost).toHaveBeenCalledWith('/monthly-runs/2024-04-30');
-      });
-
       // Success message displayed
-      expect(
-        screen.getByText(/batch created successfully/i),
-      ).toBeInTheDocument();
+      await waitFor(() => {
+        expect(
+          screen.getByText(/batch created successfully/i),
+        ).toBeInTheDocument();
+      });
     });
 
     it('displays newly created batch in Current Batch section with "Data Preparation" status', async () => {
@@ -135,9 +125,10 @@ describe('Epic 1, Story 2: Start Page - Batch Creation', () => {
         WorkflowStatusName: 'Data Preparation',
       });
 
-      mockGet.mockResolvedValue(createMockBatches());
+      mockGet
+        .mockResolvedValueOnce(createMockBatches())
+        .mockResolvedValueOnce(createMockBatches([newBatch]));
       mockPost.mockResolvedValue({ message: 'Success' });
-      mockGet.mockResolvedValue(createMockBatches([newBatch]));
 
       render(<HomePage />);
 
@@ -151,8 +142,6 @@ describe('Epic 1, Story 2: Start Page - Batch Creation', () => {
       await user.click(
         screen.getByRole('button', { name: /Create New Batch/i }),
       );
-      await user.type(screen.getByLabelText(/Report Date/i), '2024-04-30');
-      await user.click(screen.getByRole('button', { name: /Create/i }));
 
       // Verify new batch is displayed
       await waitFor(() => {
@@ -162,7 +151,7 @@ describe('Epic 1, Story 2: Start Page - Batch Creation', () => {
     });
   });
 
-  describe('Validation', () => {
+  describe('Error Handling', () => {
     it('shows error when creating batch with duplicate report date', async () => {
       const user = userEvent.setup();
       const existingBatch = createMockBatch({ ReportDate: '2024-03-31' });
@@ -180,77 +169,16 @@ describe('Epic 1, Story 2: Start Page - Batch Creation', () => {
         ).toBeInTheDocument();
       });
 
-      // Open modal and try to create duplicate
+      // Click create button
       await user.click(
         screen.getByRole('button', { name: /Create New Batch/i }),
       );
-      await user.type(screen.getByLabelText(/Report Date/i), '2024-03-31');
-      await user.click(screen.getByRole('button', { name: /Create/i }));
 
       // Error message displayed
       await waitFor(() => {
         expect(
           screen.getByText(/Report batch for this date already exists/i),
         ).toBeInTheDocument();
-      });
-    });
-
-    it('closes modal without creating batch when Cancel is clicked', async () => {
-      const user = userEvent.setup();
-      mockGet.mockResolvedValue(createMockBatches());
-
-      render(<HomePage />);
-
-      await waitFor(() => {
-        expect(
-          screen.getByRole('button', { name: /Create New Batch/i }),
-        ).toBeInTheDocument();
-      });
-
-      // Open modal
-      await user.click(
-        screen.getByRole('button', { name: /Create New Batch/i }),
-      );
-      expect(screen.getByRole('dialog')).toBeInTheDocument();
-
-      // Click Cancel
-      const cancelButton = screen.getByRole('button', { name: /Cancel/i });
-      await user.click(cancelButton);
-
-      // Modal should close
-      await waitFor(() => {
-        expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-      });
-
-      // No API calls made
-      expect(mockPost).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('API Integration', () => {
-    it('calls correct API endpoints when creating batch', async () => {
-      const user = userEvent.setup();
-      mockGet.mockResolvedValue(createMockBatches());
-      mockPost.mockResolvedValue({ message: 'Success' });
-
-      render(<HomePage />);
-
-      await waitFor(() => {
-        expect(
-          screen.getByRole('button', { name: /Create New Batch/i }),
-        ).toBeInTheDocument();
-      });
-
-      await user.click(
-        screen.getByRole('button', { name: /Create New Batch/i }),
-      );
-      await user.type(screen.getByLabelText(/Report Date/i), '2024-04-30');
-      await user.click(screen.getByRole('button', { name: /Create/i }));
-
-      await waitFor(() => {
-        // Should create batch then start monthly process
-        expect(mockPost).toHaveBeenCalledWith('/monthly-report-batch');
-        expect(mockPost).toHaveBeenCalledWith('/monthly-runs/2024-04-30');
       });
     });
 
@@ -270,19 +198,20 @@ describe('Epic 1, Story 2: Start Page - Batch Creation', () => {
       await user.click(
         screen.getByRole('button', { name: /Create New Batch/i }),
       );
-      await user.type(screen.getByLabelText(/Report Date/i), '2024-04-30');
-      await user.click(screen.getByRole('button', { name: /Create/i }));
 
       await waitFor(() => {
-        expect(screen.getByRole('alert')).toHaveTextContent(/error/i);
+        expect(screen.getByRole('alert')).toHaveTextContent(
+          /Internal Server Error/i,
+        );
       });
     });
   });
 
-  describe('Accessibility', () => {
-    it('provides accessible form labels in modal', async () => {
+  describe('API Integration', () => {
+    it('calls POST /monthly-report-batch endpoint when creating batch', async () => {
       const user = userEvent.setup();
       mockGet.mockResolvedValue(createMockBatches());
+      mockPost.mockResolvedValue({ message: 'Success' });
 
       render(<HomePage />);
 
@@ -296,13 +225,19 @@ describe('Epic 1, Story 2: Start Page - Batch Creation', () => {
         screen.getByRole('button', { name: /Create New Batch/i }),
       );
 
-      // Form should have accessible labels
-      expect(screen.getByLabelText(/Report Date/i)).toBeInTheDocument();
+      await waitFor(() => {
+        expect(mockPost).toHaveBeenCalledWith('/monthly-report-batch');
+      });
     });
 
-    it('modal has proper ARIA attributes', async () => {
+    it('refreshes batch list after successful creation', async () => {
       const user = userEvent.setup();
-      mockGet.mockResolvedValue(createMockBatches());
+      const newBatch = createMockBatch({ ReportDate: '2024-04-30' });
+
+      mockGet
+        .mockResolvedValueOnce(createMockBatches())
+        .mockResolvedValueOnce(createMockBatches([newBatch]));
+      mockPost.mockResolvedValue({ message: 'Success' });
 
       render(<HomePage />);
 
@@ -316,9 +251,56 @@ describe('Epic 1, Story 2: Start Page - Batch Creation', () => {
         screen.getByRole('button', { name: /Create New Batch/i }),
       );
 
-      const dialog = screen.getByRole('dialog');
-      expect(dialog).toBeInTheDocument();
-      expect(dialog).toHaveAttribute('aria-modal', 'true');
+      // Should have called GET to refresh
+      await waitFor(() => {
+        expect(mockGet).toHaveBeenCalledTimes(2);
+      });
+    });
+  });
+
+  describe('UI State', () => {
+    it('disables button while creating batch', async () => {
+      const user = userEvent.setup();
+      mockGet.mockResolvedValue(createMockBatches());
+
+      // Make the POST hang to test loading state
+      let resolvePost: (value: unknown) => void;
+      mockPost.mockImplementation(
+        () =>
+          new Promise((resolve) => {
+            resolvePost = resolve;
+          }),
+      );
+
+      render(<HomePage />);
+
+      await waitFor(() => {
+        expect(
+          screen.getByRole('button', { name: /Create New Batch/i }),
+        ).toBeInTheDocument();
+      });
+
+      const createButton = screen.getByRole('button', {
+        name: /Create New Batch/i,
+      });
+      await user.click(createButton);
+
+      // Button should be disabled during creation
+      await waitFor(() => {
+        expect(
+          screen.getByRole('button', { name: /Creating/i }),
+        ).toBeDisabled();
+      });
+
+      // Resolve the promise to complete
+      resolvePost!({ message: 'Success' });
+
+      // Button should be re-enabled
+      await waitFor(() => {
+        expect(
+          screen.getByRole('button', { name: /Create New Batch/i }),
+        ).not.toBeDisabled();
+      });
     });
   });
 });

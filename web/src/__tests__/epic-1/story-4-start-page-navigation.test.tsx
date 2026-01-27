@@ -10,7 +10,7 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi as vitest } from 'vitest';
 
@@ -20,6 +20,8 @@ vi.mock('@/lib/api/client', () => ({
   post: vi.fn(),
   put: vi.fn(),
   del: vi.fn(),
+  monthlyGet: vi.fn(),
+  monthlyPost: vi.fn(),
 }));
 
 // Mock Next.js navigation
@@ -32,11 +34,11 @@ vi.mock('next/navigation', () => ({
   usePathname: vi.fn(() => '/'),
 }));
 
-import { get } from '@/lib/api/client';
+import { monthlyGet } from '@/lib/api/client';
 // This import WILL FAIL until implemented - that's the point of TDD!
 import HomePage from '@/app/page';
 
-const mockGet = get as ReturnType<typeof vitest.fn>;
+const mockGet = monthlyGet as ReturnType<typeof vitest.fn>;
 
 // Mock data factory
 const createMockBatches = () => ({
@@ -90,7 +92,6 @@ describe('Epic 1, Story 4: Start Page - Navigation Links', () => {
     });
 
     it('navigates to Portfolio Imports Dashboard when File Uploads is clicked', async () => {
-      const user = userEvent.setup();
       mockGet.mockResolvedValue(createMockBatches());
 
       render(<HomePage />);
@@ -266,7 +267,6 @@ describe('Epic 1, Story 4: Start Page - Navigation Links', () => {
     });
 
     it('navigates to correct screen when quick action card is clicked', async () => {
-      const user = userEvent.setup();
       mockGet.mockResolvedValue(createMockBatches());
 
       render(<HomePage />);

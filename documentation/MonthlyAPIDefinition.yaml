@@ -4,6 +4,8 @@ info:
   version: 1.0.0
   contact:
     name: Digiata
+servers:
+  - url: http://localhost:10003/investinsight/monthly-process
 paths:
   /monthly-runs/{ReportDate}:
     post:

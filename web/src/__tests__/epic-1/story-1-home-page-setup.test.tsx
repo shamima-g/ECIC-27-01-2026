@@ -20,13 +20,15 @@ vi.mock('@/lib/api/client', () => ({
   post: vi.fn(),
   put: vi.fn(),
   del: vi.fn(),
+  monthlyGet: vi.fn(),
+  monthlyPost: vi.fn(),
 }));
 
-import { get } from '@/lib/api/client';
+import { monthlyGet } from '@/lib/api/client';
 // This import WILL FAIL until implemented - that's the point of TDD!
 import HomePage from '@/app/page';
 
-const mockGet = get as ReturnType<typeof vitest.fn>;
+const mockGet = monthlyGet as ReturnType<typeof vitest.fn>;
 
 // Mock data factory for report batches
 const createMockBatches = () => ({
@@ -147,10 +149,10 @@ describe('Epic 1, Story 1: Home Page Setup', () => {
     it('has semantic HTML structure with main landmark', async () => {
       mockGet.mockResolvedValue(createMockBatches());
 
-      const { container } = render(<HomePage />);
+      render(<HomePage />);
 
       await waitFor(() => {
-        expect(container.querySelector('main')).toBeInTheDocument();
+        expect(screen.getByRole('main')).toBeInTheDocument();
       });
     });
   });

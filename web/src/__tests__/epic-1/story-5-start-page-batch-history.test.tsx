@@ -20,13 +20,15 @@ vi.mock('@/lib/api/client', () => ({
   post: vi.fn(),
   put: vi.fn(),
   del: vi.fn(),
+  monthlyGet: vi.fn(),
+  monthlyPost: vi.fn(),
 }));
 
-import { get } from '@/lib/api/client';
+import { monthlyGet } from '@/lib/api/client';
 // This import WILL FAIL until implemented - that's the point of TDD!
 import HomePage from '@/app/page';
 
-const mockGet = get as ReturnType<typeof vitest.fn>;
+const mockGet = monthlyGet as ReturnType<typeof vitest.fn>;
 
 // Mock data factory
 const createMockBatch = (overrides = {}) => ({
@@ -94,7 +96,7 @@ const createMockApprovalLogs = () => ({
 
 describe('Epic 1, Story 5: Start Page - Batch History', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
   });
 
   describe('Batch History Table', () => {
@@ -145,10 +147,10 @@ describe('Epic 1, Story 5: Start Page - Batch History', () => {
     it('displays WorkflowStatusName with green badge for complete batches', async () => {
       mockGet.mockResolvedValue(createHistoricalBatches());
 
-      const { container } = render(<HomePage />);
+      render(<HomePage />);
 
       await waitFor(() => {
-        const badges = container.querySelectorAll('[data-status="Complete"]');
+        const badges = screen.getAllByTestId(/status-badge-Complete/);
         expect(badges.length).toBeGreaterThan(0);
 
         badges.forEach((badge) => {
@@ -171,10 +173,10 @@ describe('Epic 1, Story 5: Start Page - Batch History', () => {
 
       mockGet.mockResolvedValue(batchesWithInProgress);
 
-      const { container } = render(<HomePage />);
+      render(<HomePage />);
 
       await waitFor(() => {
-        const badge = container.querySelector('[data-status="First Approval"]');
+        const badge = screen.getByTestId('status-badge-First Approval');
         expect(badge).toBeInTheDocument();
         expect(badge).toHaveClass(/yellow|warning/i);
       });
@@ -184,8 +186,9 @@ describe('Epic 1, Story 5: Start Page - Batch History', () => {
   describe('Batch History Details', () => {
     it('expands row to show additional details when clicked', async () => {
       const user = userEvent.setup();
-      mockGet.mockResolvedValue(createHistoricalBatches());
-      mockGet.mockResolvedValueOnce(createMockApprovalLogs());
+      // First call returns batches, subsequent calls return approval logs
+      mockGet.mockResolvedValueOnce(createHistoricalBatches());
+      mockGet.mockResolvedValue(createMockApprovalLogs());
 
       render(<HomePage />);
 
@@ -208,8 +211,9 @@ describe('Epic 1, Story 5: Start Page - Batch History', () => {
 
     it('displays approval information for completed batch', async () => {
       const user = userEvent.setup();
-      mockGet.mockResolvedValue(createHistoricalBatches());
-      mockGet.mockResolvedValueOnce(createMockApprovalLogs());
+      // First call returns batches, subsequent calls return approval logs
+      mockGet.mockResolvedValueOnce(createHistoricalBatches());
+      mockGet.mockResolvedValue(createMockApprovalLogs());
 
       render(<HomePage />);
 
@@ -232,8 +236,9 @@ describe('Epic 1, Story 5: Start Page - Batch History', () => {
 
     it('shows who approved at each level and when', async () => {
       const user = userEvent.setup();
-      mockGet.mockResolvedValue(createHistoricalBatches());
-      mockGet.mockResolvedValueOnce(createMockApprovalLogs());
+      // First call returns batches, subsequent calls return approval logs
+      mockGet.mockResolvedValueOnce(createHistoricalBatches());
+      mockGet.mockResolvedValue(createMockApprovalLogs());
 
       render(<HomePage />);
 
@@ -287,11 +292,29 @@ describe('Epic 1, Story 5: Start Page - Batch History', () => {
 
     it('shows next 10 batches when Next button is clicked', async () => {
       const user = userEvent.setup();
+      // Generate valid dates (last day of each month going back from Dec 2023)
+      const validDates = [
+        '2023-12-31',
+        '2023-11-30',
+        '2023-10-31',
+        '2023-09-30',
+        '2023-08-31',
+        '2023-07-31',
+        '2023-06-30',
+        '2023-05-31',
+        '2023-04-30',
+        '2023-03-31',
+        '2023-02-28',
+        '2023-01-31',
+        '2022-12-31',
+        '2022-11-30',
+        '2022-10-31',
+      ];
       const manyBatches = {
-        MonthlyReportBatches: Array.from({ length: 15 }, (_, i) =>
+        MonthlyReportBatches: validDates.map((date, i) =>
           createMockBatch({
             ReportBatchId: i + 1,
-            ReportDate: `2023-${String(12 - i).padStart(2, '0')}-31`,
+            ReportDate: date,
           }),
         ),
       };
@@ -311,9 +334,9 @@ describe('Epic 1, Story 5: Start Page - Batch History', () => {
       const nextButton = screen.getByRole('button', { name: /next/i });
       await user.click(nextButton);
 
-      // Second page shows remaining batches
+      // Second page shows remaining batches (indices 10-14)
       await waitFor(() => {
-        // Last batch should now be visible
+        // 11th batch (index 10) should now be visible
         expect(screen.getByText('2023-02-28')).toBeInTheDocument();
       });
     });
@@ -353,8 +376,9 @@ describe('Epic 1, Story 5: Start Page - Batch History', () => {
     it('fetches approval logs when batch details are expanded', async () => {
       const user = userEvent.setup();
       const batchId = 1;
-      mockGet.mockResolvedValue(createHistoricalBatches());
-      mockGet.mockResolvedValueOnce(createMockApprovalLogs());
+      // First call returns batches, subsequent calls return approval logs
+      mockGet.mockResolvedValueOnce(createHistoricalBatches());
+      mockGet.mockResolvedValue(createMockApprovalLogs());
 
       render(<HomePage />);
 

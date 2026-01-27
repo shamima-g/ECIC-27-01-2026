@@ -19,13 +19,15 @@ vi.mock('@/lib/api/client', () => ({
   post: vi.fn(),
   put: vi.fn(),
   del: vi.fn(),
+  monthlyGet: vi.fn(),
+  monthlyPost: vi.fn(),
 }));
 
-import { get } from '@/lib/api/client';
+import { monthlyGet } from '@/lib/api/client';
 // This import WILL FAIL until implemented - that's the point of TDD!
 import HomePage from '@/app/page';
 
-const mockGet = get as ReturnType<typeof vitest.fn>;
+const mockGet = monthlyGet as ReturnType<typeof vitest.fn>;
 
 // Type definitions for mock data
 interface MockBatch {
@@ -56,7 +58,7 @@ const createMockBatch = (overrides: Partial<MockBatch> = {}): MockBatch => ({
 
 describe('Epic 1, Story 3: Start Page - Current Status Display', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
   });
 
   describe('Status Display', () => {
@@ -87,11 +89,11 @@ describe('Epic 1, Story 3: Start Page - Current Status Display', () => {
       const batch = createMockBatch({ WorkflowStatusName: 'Data Preparation' });
       mockGet.mockResolvedValue(createMockBatches([batch]));
 
-      const { container } = render(<HomePage />);
+      render(<HomePage />);
 
       await waitFor(() => {
-        const badge = container.querySelector(
-          '[data-status="Data Preparation"]',
+        const badge = screen.getByTestId(
+          'current-status-badge-Data Preparation',
         );
         expect(badge).toBeInTheDocument();
         // Badge should have blue styling (specific class depends on implementation)
@@ -103,10 +105,10 @@ describe('Epic 1, Story 3: Start Page - Current Status Display', () => {
       const batch = createMockBatch({ WorkflowStatusName: 'First Approval' });
       mockGet.mockResolvedValue(createMockBatches([batch]));
 
-      const { container } = render(<HomePage />);
+      render(<HomePage />);
 
       await waitFor(() => {
-        const badge = container.querySelector('[data-status="First Approval"]');
+        const badge = screen.getByTestId('current-status-badge-First Approval');
         expect(badge).toBeInTheDocument();
         expect(badge).toHaveClass(/yellow|warning/i);
       });
@@ -119,10 +121,11 @@ describe('Epic 1, Story 3: Start Page - Current Status Display', () => {
       });
       mockGet.mockResolvedValue(createMockBatches([batch]));
 
-      const { container } = render(<HomePage />);
+      render(<HomePage />);
 
       await waitFor(() => {
-        const badge = container.querySelector('[data-status="Complete"]');
+        // Completed batches show in history table, not current status
+        const badge = screen.getByTestId('status-badge-Complete');
         expect(badge).toBeInTheDocument();
         expect(badge).toHaveClass(/green|success/i);
       });
@@ -185,15 +188,16 @@ describe('Epic 1, Story 3: Start Page - Current Status Display', () => {
 
       mockGet.mockResolvedValueOnce(createMockBatches([initialBatch]));
 
-      const { rerender } = render(<HomePage />);
+      const { unmount } = render(<HomePage />);
 
       await waitFor(() => {
         expect(screen.getByText('Data Preparation')).toBeInTheDocument();
       });
 
-      // Simulate refresh/re-fetch
+      // Simulate page refresh by unmounting and remounting
+      unmount();
       mockGet.mockResolvedValueOnce(createMockBatches([updatedBatch]));
-      rerender(<HomePage />);
+      render(<HomePage />);
 
       await waitFor(() => {
         expect(screen.getByText('First Approval')).toBeInTheDocument();

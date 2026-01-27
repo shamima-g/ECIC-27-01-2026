@@ -6,12 +6,24 @@
  */
 
 /**
- * API base URL - Retrieved from environment variable
- * Set NEXT_PUBLIC_API_BASE_URL in your .env.local file
- * Default: http://localhost:8042 (adjust as needed)
+ * API base URLs for different services
+ * Each service has its own port and base path
+ * Set environment variables in .env.local to override defaults
  */
 export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8042';
+
+export const MONTHLY_API_BASE_URL =
+  process.env.NEXT_PUBLIC_MONTHLY_API_BASE_URL ||
+  'http://localhost:10003/investinsight/monthly-process';
+
+export const FILE_IMPORTER_API_BASE_URL =
+  process.env.NEXT_PUBLIC_FILE_IMPORTER_API_BASE_URL ||
+  'http://localhost:10002';
+
+export const DATA_MAINTENANCE_API_BASE_URL =
+  process.env.NEXT_PUBLIC_DATA_MAINTENANCE_API_BASE_URL ||
+  'http://localhost:10001';
 
 /**
  * Default pagination settings

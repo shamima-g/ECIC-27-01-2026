@@ -13,7 +13,12 @@
  * 3. Customize error handling and logging as needed
  */
 
-import { API_BASE_URL } from '@/lib/utils/constants';
+import {
+  API_BASE_URL,
+  MONTHLY_API_BASE_URL,
+  FILE_IMPORTER_API_BASE_URL,
+  DATA_MAINTENANCE_API_BASE_URL,
+} from '@/lib/utils/constants';
 import type {
   APIError,
   APIRequestConfig,
@@ -33,10 +38,11 @@ export async function apiClient<T = unknown>(
   endpoint: string,
   config: APIRequestConfig = {},
 ): Promise<T> {
-  const { params, lastChangedUser, isBinaryResponse, ...fetchConfig } = config;
+  const { params, lastChangedUser, isBinaryResponse, baseUrl, ...fetchConfig } =
+    config;
 
   // Build full URL with query parameters
-  const url = buildUrl(endpoint, params);
+  const url = buildUrl(endpoint, params, baseUrl);
 
   // Build headers
   const headers = buildHeaders(
@@ -88,8 +94,9 @@ export async function apiClient<T = unknown>(
 function buildUrl(
   endpoint: string,
   params?: Record<string, string | number | boolean | undefined>,
+  customBaseUrl?: string,
 ): string {
-  const baseUrl = `${API_BASE_URL}${endpoint}`;
+  const baseUrl = `${customBaseUrl || API_BASE_URL}${endpoint}`;
 
   if (!params) {
     return baseUrl;
@@ -408,5 +415,167 @@ export async function del<T>(
   return apiClient<T>(endpoint, {
     method: 'DELETE',
     lastChangedUser,
+  });
+}
+
+// ============================================================
+// Monthly Process API convenience methods
+// ============================================================
+
+/**
+ * Convenience method for Monthly API GET requests
+ */
+export async function monthlyGet<T>(
+  endpoint: string,
+  params?: Record<string, string | number | boolean | undefined>,
+): Promise<T> {
+  return apiClient<T>(endpoint, {
+    method: 'GET',
+    params,
+    baseUrl: MONTHLY_API_BASE_URL,
+  });
+}
+
+/**
+ * Convenience method for Monthly API POST requests
+ */
+export async function monthlyPost<T>(
+  endpoint: string,
+  body?: unknown,
+  lastChangedUser?: string,
+): Promise<T> {
+  return apiClient<T>(endpoint, {
+    method: 'POST',
+    body: body ? JSON.stringify(body) : undefined,
+    lastChangedUser,
+    baseUrl: MONTHLY_API_BASE_URL,
+  });
+}
+
+/**
+ * Convenience method for Monthly API PUT requests
+ */
+export async function monthlyPut<T>(
+  endpoint: string,
+  body?: unknown,
+  lastChangedUser?: string,
+): Promise<T> {
+  return apiClient<T>(endpoint, {
+    method: 'PUT',
+    body: JSON.stringify(body),
+    lastChangedUser,
+    baseUrl: MONTHLY_API_BASE_URL,
+  });
+}
+
+/**
+ * Convenience method for Monthly API DELETE requests
+ */
+export async function monthlyDel<T>(
+  endpoint: string,
+  lastChangedUser?: string,
+): Promise<T> {
+  return apiClient<T>(endpoint, {
+    method: 'DELETE',
+    lastChangedUser,
+    baseUrl: MONTHLY_API_BASE_URL,
+  });
+}
+
+// ============================================================
+// File Importer API convenience methods
+// ============================================================
+
+/**
+ * Convenience method for File Importer API GET requests
+ */
+export async function fileImporterGet<T>(
+  endpoint: string,
+  params?: Record<string, string | number | boolean | undefined>,
+): Promise<T> {
+  return apiClient<T>(endpoint, {
+    method: 'GET',
+    params,
+    baseUrl: FILE_IMPORTER_API_BASE_URL,
+  });
+}
+
+/**
+ * Convenience method for File Importer API POST requests
+ */
+export async function fileImporterPost<T>(
+  endpoint: string,
+  body?: unknown,
+  lastChangedUser?: string,
+): Promise<T> {
+  return apiClient<T>(endpoint, {
+    method: 'POST',
+    body: body ? JSON.stringify(body) : undefined,
+    lastChangedUser,
+    baseUrl: FILE_IMPORTER_API_BASE_URL,
+  });
+}
+
+// ============================================================
+// Data Maintenance API convenience methods
+// ============================================================
+
+/**
+ * Convenience method for Data Maintenance API GET requests
+ */
+export async function dataMaintenanceGet<T>(
+  endpoint: string,
+  params?: Record<string, string | number | boolean | undefined>,
+): Promise<T> {
+  return apiClient<T>(endpoint, {
+    method: 'GET',
+    params,
+    baseUrl: DATA_MAINTENANCE_API_BASE_URL,
+  });
+}
+
+/**
+ * Convenience method for Data Maintenance API POST requests
+ */
+export async function dataMaintenancePost<T>(
+  endpoint: string,
+  body?: unknown,
+  lastChangedUser?: string,
+): Promise<T> {
+  return apiClient<T>(endpoint, {
+    method: 'POST',
+    body: body ? JSON.stringify(body) : undefined,
+    lastChangedUser,
+    baseUrl: DATA_MAINTENANCE_API_BASE_URL,
+  });
+}
+
+/**
+ * Convenience method for Data Maintenance API PUT requests
+ */
+export async function dataMaintenancePut<T>(
+  endpoint: string,
+  body?: unknown,
+  lastChangedUser?: string,
+): Promise<T> {
+  return apiClient<T>(endpoint, {
+    method: 'PUT',
+    body: JSON.stringify(body),
+    lastChangedUser,
+    baseUrl: DATA_MAINTENANCE_API_BASE_URL,
+  });
+}
+
+/**
+ * Convenience method for Data Maintenance API DELETE requests
+ */
+export async function dataMaintenanceDel<T>(
+  endpoint: string,
+  lastChangedUser?: string,
+): Promise<T> {
+  return apiClient<T>(endpoint, {
+    method: 'DELETE',
+    lastChangedUser,
+    baseUrl: DATA_MAINTENANCE_API_BASE_URL,
   });
 }

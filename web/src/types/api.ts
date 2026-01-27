@@ -36,6 +36,7 @@ export interface APIRequestConfig extends RequestInit {
   requiresAuth?: boolean;
   lastChangedUser?: string; // For audit trails - remove if not needed
   isBinaryResponse?: boolean; // Flag to indicate response should be treated as binary data
+  baseUrl?: string; // Override the default API base URL
 }
 
 /**

@@ -164,3 +164,17 @@ Run these commands:
 
 ---
 
+
+---
+
+## Session Summary
+
+**Ended:** 2026-01-27 08:12Z
+**Total Prompts:** 3
+**Tools Used:** Bash, Glob, AskUserQuestion, TodoWrite, Task
+**Files Modified:** 0
+
+### Token Usage
+
+_Token usage data not available. Run `/context` during session to capture token usage._
+
