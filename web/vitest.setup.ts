@@ -1,6 +1,9 @@
 // Learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom/vitest';
 
+// vitest-axe matchers for accessibility testing
+import 'vitest-axe/extend-expect';
+
 // Polyfill for Web APIs needed by Next.js
 // These are required for testing files that import from 'next/server'
 if (typeof Request === 'undefined') {
