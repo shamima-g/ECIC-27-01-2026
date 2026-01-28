@@ -15,20 +15,22 @@ import userEvent from '@testing-library/user-event';
 import { axe } from 'vitest-axe';
 import { vi as vitest } from 'vitest';
 
-
 // Mock the API client
 vi.mock('@/lib/api/client', () => ({
   get: vi.fn(),
   post: vi.fn(),
   put: vi.fn(),
   del: vi.fn(),
+  fileImporterGet: vi.fn(),
+  fileImporterPost: vi.fn(),
+  fileImporterDel: vi.fn(),
 }));
 
-import { get } from '@/lib/api/client';
+import { fileImporterGet } from '@/lib/api/client';
 // This import WILL FAIL until implemented - that's the point of TDD!
 import OtherImportsPage from '@/app/imports/other/page';
 
-const mockGet = get as ReturnType<typeof vitest.fn>;
+const mockFileImporterGet = fileImporterGet as ReturnType<typeof vitest.fn>;
 
 // Type definitions based on FileImporterAPIDefinition.yaml
 interface OtherFile {
@@ -52,7 +54,9 @@ interface OtherFile {
 }
 
 // Mock data factory
-const createMockOtherFile = (overrides: Partial<OtherFile> = {}): OtherFile => ({
+const createMockOtherFile = (
+  overrides: Partial<OtherFile> = {},
+): OtherFile => ({
   FileLogId: 1,
   FileSettingId: 1,
   FileSource: 'Bloomberg',
@@ -85,12 +89,31 @@ describe('Epic 2, Story 2: Other Imports Dashboard - List View', () => {
   describe('List Display', () => {
     it('displays all expected file types in list format', async () => {
       const files = [
-        createMockOtherFile({ FileType: 'Monthly Index Files', StatusColor: 'Green' }),
-        createMockOtherFile({ FileType: 'Bloomberg Credit Ratings', StatusColor: 'Gray', FileName: '', Message: 'File not uploaded' }),
-        createMockOtherFile({ FileType: 'Bloomberg Holdings', StatusColor: 'Red', Message: 'Validation failed' }),
-        createMockOtherFile({ FileType: 'Custodian Files', FileSource: 'Custodian', StatusColor: 'Yellow', Message: 'Processing' }),
+        createMockOtherFile({
+          FileType: 'Monthly Index Files',
+          StatusColor: 'Green',
+        }),
+        createMockOtherFile({
+          FileType: 'Bloomberg Credit Ratings',
+          StatusColor: 'Gray',
+          FileName: '',
+          Message: 'File not uploaded',
+        }),
+        createMockOtherFile({
+          FileType: 'Bloomberg Holdings',
+          StatusColor: 'Red',
+          Message: 'Validation failed',
+        }),
+        createMockOtherFile({
+          FileType: 'Custodian Files',
+          FileSource: 'Custodian',
+          StatusColor: 'Yellow',
+          Message: 'Processing',
+        }),
       ];
-      mockGet.mockResolvedValue(createMockOtherFilesResponse(files));
+      mockFileImporterGet.mockResolvedValue(
+        createMockOtherFilesResponse(files),
+      );
 
       render(<OtherImportsPage />);
 
@@ -107,9 +130,14 @@ describe('Epic 2, Story 2: Other Imports Dashboard - List View', () => {
 
     it('displays file type name and status icon for each row', async () => {
       const files = [
-        createMockOtherFile({ FileType: 'Monthly Index Files', StatusColor: 'Green' }),
+        createMockOtherFile({
+          FileType: 'Monthly Index Files',
+          StatusColor: 'Green',
+        }),
       ];
-      mockGet.mockResolvedValue(createMockOtherFilesResponse(files));
+      mockFileImporterGet.mockResolvedValue(
+        createMockOtherFilesResponse(files),
+      );
 
       render(<OtherImportsPage />);
 
@@ -130,18 +158,24 @@ describe('Epic 2, Story 2: Other Imports Dashboard - List View', () => {
           FileType: 'Bloomberg Credit Ratings',
           StatusColor: 'Gray',
           FileName: '',
-          Message: 'File not uploaded'
+          Message: 'File not uploaded',
         }),
       ];
-      mockGet.mockResolvedValue(createMockOtherFilesResponse(files));
+      mockFileImporterGet.mockResolvedValue(
+        createMockOtherFilesResponse(files),
+      );
 
       render(<OtherImportsPage />);
 
       await waitFor(() => {
-        expect(screen.getByText('Bloomberg Credit Ratings')).toBeInTheDocument();
+        expect(
+          screen.getByText('Bloomberg Credit Ratings'),
+        ).toBeInTheDocument();
       });
 
-      expect(screen.getByLabelText(/missing|not uploaded/i)).toBeInTheDocument();
+      expect(
+        screen.getByLabelText(/missing|not uploaded/i),
+      ).toBeInTheDocument();
     });
 
     it('displays yellow "Busy" status icon with spinner for processing files', async () => {
@@ -150,10 +184,12 @@ describe('Epic 2, Story 2: Other Imports Dashboard - List View', () => {
           FileType: 'Custodian Files',
           StatusColor: 'Yellow',
           Message: 'Processing',
-          WorkflowStatusName: 'Processing'
+          WorkflowStatusName: 'Processing',
         }),
       ];
-      mockGet.mockResolvedValue(createMockOtherFilesResponse(files));
+      mockFileImporterGet.mockResolvedValue(
+        createMockOtherFilesResponse(files),
+      );
 
       render(<OtherImportsPage />);
 
@@ -169,10 +205,12 @@ describe('Epic 2, Story 2: Other Imports Dashboard - List View', () => {
         createMockOtherFile({
           FileType: 'Bloomberg Holdings',
           StatusColor: 'Red',
-          Message: 'Validation failed'
+          Message: 'Validation failed',
         }),
       ];
-      mockGet.mockResolvedValue(createMockOtherFilesResponse(files));
+      mockFileImporterGet.mockResolvedValue(
+        createMockOtherFilesResponse(files),
+      );
 
       render(<OtherImportsPage />);
 
@@ -180,17 +218,21 @@ describe('Epic 2, Story 2: Other Imports Dashboard - List View', () => {
         expect(screen.getByText('Bloomberg Holdings')).toBeInTheDocument();
       });
 
-      expect(screen.getByLabelText(/failed|validation failed/i)).toBeInTheDocument();
+      expect(
+        screen.getByLabelText(/failed|validation failed/i),
+      ).toBeInTheDocument();
     });
 
     it('displays green "Complete" status icon for successfully uploaded files', async () => {
       const files = [
         createMockOtherFile({
           FileType: 'Monthly Index Files',
-          StatusColor: 'Green'
+          StatusColor: 'Green',
         }),
       ];
-      mockGet.mockResolvedValue(createMockOtherFilesResponse(files));
+      mockFileImporterGet.mockResolvedValue(
+        createMockOtherFilesResponse(files),
+      );
 
       render(<OtherImportsPage />);
 
@@ -206,9 +248,14 @@ describe('Epic 2, Story 2: Other Imports Dashboard - List View', () => {
     it('opens modal when status icon is clicked', async () => {
       const user = userEvent.setup();
       const files = [
-        createMockOtherFile({ FileType: 'Monthly Index Files', StatusColor: 'Green' }),
+        createMockOtherFile({
+          FileType: 'Monthly Index Files',
+          StatusColor: 'Green',
+        }),
       ];
-      mockGet.mockResolvedValue(createMockOtherFilesResponse(files));
+      mockFileImporterGet.mockResolvedValue(
+        createMockOtherFilesResponse(files),
+      );
 
       render(<OtherImportsPage />);
 
@@ -235,12 +282,14 @@ describe('Epic 2, Story 2: Other Imports Dashboard - List View', () => {
         createMockOtherFile({
           FileType: 'Custodian Files',
           StatusColor: 'Yellow',
-          WorkflowStatusName: 'Processing'
+          WorkflowStatusName: 'Processing',
         }),
       ];
 
       // First call returns busy status
-      mockGet.mockResolvedValueOnce(createMockOtherFilesResponse(files));
+      mockFileImporterGet.mockResolvedValueOnce(
+        createMockOtherFilesResponse(files),
+      );
 
       render(<OtherImportsPage />);
 
@@ -253,10 +302,12 @@ describe('Epic 2, Story 2: Other Imports Dashboard - List View', () => {
         createMockOtherFile({
           FileType: 'Custodian Files',
           StatusColor: 'Green',
-          WorkflowStatusName: 'Complete'
+          WorkflowStatusName: 'Complete',
         }),
       ];
-      mockGet.mockResolvedValueOnce(createMockOtherFilesResponse(updatedFiles));
+      mockFileImporterGet.mockResolvedValueOnce(
+        createMockOtherFilesResponse(updatedFiles),
+      );
 
       // Advance timers to trigger polling (5 seconds)
       vi.advanceTimersByTime(5000);
@@ -273,9 +324,14 @@ describe('Epic 2, Story 2: Other Imports Dashboard - List View', () => {
       vi.useFakeTimers();
 
       const files = [
-        createMockOtherFile({ FileType: 'Monthly Index Files', StatusColor: 'Green' }),
+        createMockOtherFile({
+          FileType: 'Monthly Index Files',
+          StatusColor: 'Green',
+        }),
       ];
-      mockGet.mockResolvedValue(createMockOtherFilesResponse(files));
+      mockFileImporterGet.mockResolvedValue(
+        createMockOtherFilesResponse(files),
+      );
 
       render(<OtherImportsPage />);
 
@@ -284,13 +340,13 @@ describe('Epic 2, Story 2: Other Imports Dashboard - List View', () => {
       });
 
       // Clear call count
-      mockGet.mockClear();
+      mockFileImporterGet.mockClear();
 
       // Advance timers by 10 seconds
       vi.advanceTimersByTime(10000);
 
       // Should not poll when all files are complete
-      expect(mockGet).not.toHaveBeenCalled();
+      expect(mockFileImporterGet).not.toHaveBeenCalled();
 
       vi.useRealTimers();
     });
@@ -299,11 +355,25 @@ describe('Epic 2, Story 2: Other Imports Dashboard - List View', () => {
   describe('File Grouping by Source', () => {
     it('groups Bloomberg files together', async () => {
       const files = [
-        createMockOtherFile({ FileType: 'Monthly Index Files', FileSource: 'Bloomberg', StatusColor: 'Green' }),
-        createMockOtherFile({ FileType: 'Bloomberg Credit Ratings', FileSource: 'Bloomberg', StatusColor: 'Green' }),
-        createMockOtherFile({ FileType: 'Bloomberg Holdings', FileSource: 'Bloomberg', StatusColor: 'Green' }),
+        createMockOtherFile({
+          FileType: 'Monthly Index Files',
+          FileSource: 'Bloomberg',
+          StatusColor: 'Green',
+        }),
+        createMockOtherFile({
+          FileType: 'Bloomberg Credit Ratings',
+          FileSource: 'Bloomberg',
+          StatusColor: 'Green',
+        }),
+        createMockOtherFile({
+          FileType: 'Bloomberg Holdings',
+          FileSource: 'Bloomberg',
+          StatusColor: 'Green',
+        }),
       ];
-      mockGet.mockResolvedValue(createMockOtherFilesResponse(files));
+      mockFileImporterGet.mockResolvedValue(
+        createMockOtherFilesResponse(files),
+      );
 
       render(<OtherImportsPage />);
 
@@ -319,9 +389,15 @@ describe('Epic 2, Story 2: Other Imports Dashboard - List View', () => {
 
     it('groups Custodian files together', async () => {
       const files = [
-        createMockOtherFile({ FileType: 'Custodian Files', FileSource: 'Custodian', StatusColor: 'Green' }),
+        createMockOtherFile({
+          FileType: 'Custodian Files',
+          FileSource: 'Custodian',
+          StatusColor: 'Green',
+        }),
       ];
-      mockGet.mockResolvedValue(createMockOtherFilesResponse(files));
+      mockFileImporterGet.mockResolvedValue(
+        createMockOtherFilesResponse(files),
+      );
 
       render(<OtherImportsPage />);
 
@@ -335,15 +411,17 @@ describe('Epic 2, Story 2: Other Imports Dashboard - List View', () => {
 
   describe('Loading and Error States', () => {
     it('displays loading indicator while fetching data', () => {
-      mockGet.mockImplementation(() => new Promise(() => {})); // Never resolves
+      mockFileImporterGet.mockImplementation(() => new Promise(() => {})); // Never resolves
 
       render(<OtherImportsPage />);
 
-      expect(screen.getByRole('status', { name: /loading/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('status', { name: /loading/i }),
+      ).toBeInTheDocument();
     });
 
     it('displays error message when API call fails', async () => {
-      mockGet.mockRejectedValue(new Error('Network error'));
+      mockFileImporterGet.mockRejectedValue(new Error('Network error'));
 
       render(<OtherImportsPage />);
 
@@ -358,19 +436,19 @@ describe('Epic 2, Story 2: Other Imports Dashboard - List View', () => {
   describe('API Integration', () => {
     it('calls other-files endpoint with correct parameters', async () => {
       const files = [createMockOtherFile()];
-      mockGet.mockResolvedValue(createMockOtherFilesResponse(files));
+      mockFileImporterGet.mockResolvedValue(
+        createMockOtherFilesResponse(files),
+      );
 
       render(<OtherImportsPage />);
 
       await waitFor(() => {
-        expect(mockGet).toHaveBeenCalledWith(
+        expect(mockFileImporterGet).toHaveBeenCalledWith(
           expect.stringContaining('/other-files'),
           expect.objectContaining({
-            params: expect.objectContaining({
-              ReportMonth: expect.any(String),
-              ReportYear: expect.any(Number),
-            }),
-          })
+            ReportMonth: expect.any(String),
+            ReportYear: expect.any(Number),
+          }),
         );
       });
     });
@@ -379,9 +457,14 @@ describe('Epic 2, Story 2: Other Imports Dashboard - List View', () => {
   describe('Accessibility', () => {
     it('has no accessibility violations', async () => {
       const files = [
-        createMockOtherFile({ FileType: 'Monthly Index Files', StatusColor: 'Green' }),
+        createMockOtherFile({
+          FileType: 'Monthly Index Files',
+          StatusColor: 'Green',
+        }),
       ];
-      mockGet.mockResolvedValue(createMockOtherFilesResponse(files));
+      mockFileImporterGet.mockResolvedValue(
+        createMockOtherFilesResponse(files),
+      );
 
       const { container } = render(<OtherImportsPage />);
 

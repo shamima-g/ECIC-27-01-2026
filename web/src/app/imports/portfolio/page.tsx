@@ -10,7 +10,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { get } from '@/lib/api/client';
+import { fileImporterGet } from '@/lib/api/client';
 import {
   Table,
   TableBody,
@@ -100,12 +100,13 @@ export default function PortfolioImportsPage() {
           currentBatch?.ReportDate,
         );
 
-        const response = await get<PortfolioFilesResponse>('/portfolio-files', {
-          params: {
+        const response = await fileImporterGet<PortfolioFilesResponse>(
+          '/portfolio-files',
+          {
             ReportMonth: reportMonth,
             ReportYear: reportYear,
           },
-        });
+        );
 
         if (!cancelled) {
           setPortfolios(response.Portfolios || []);
@@ -159,11 +160,9 @@ export default function PortfolioImportsPage() {
     } else {
       // Fetch file details from API when we don't have them locally
       try {
-        const response = await get<{ FileDetails: FileDetails }>(
+        const response = await fileImporterGet<{ FileDetails: FileDetails }>(
           '/file-details',
-          {
-            params: { FileLogId: file.FileLogId, FileType: file.FileType },
-          },
+          { FileLogId: file.FileLogId, FileType: file.FileType },
         );
         if (response?.FileDetails) {
           setFileDetails(response.FileDetails);
@@ -186,11 +185,9 @@ export default function PortfolioImportsPage() {
       currentBatch?.ReportDate,
     );
 
-    get<PortfolioFilesResponse>('/portfolio-files', {
-      params: {
-        ReportMonth: reportMonth,
-        ReportYear: reportYear,
-      },
+    fileImporterGet<PortfolioFilesResponse>('/portfolio-files', {
+      ReportMonth: reportMonth,
+      ReportYear: reportYear,
     }).then((response) => {
       setPortfolios(response.Portfolios || []);
     });

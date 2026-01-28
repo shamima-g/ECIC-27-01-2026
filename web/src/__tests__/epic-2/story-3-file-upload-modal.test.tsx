@@ -15,22 +15,28 @@ import userEvent from '@testing-library/user-event';
 import { axe } from 'vitest-axe';
 import { vi as vitest } from 'vitest';
 
-
 // Mock the API client
 vi.mock('@/lib/api/client', () => ({
   get: vi.fn(),
   post: vi.fn(),
   put: vi.fn(),
   del: vi.fn(),
+  fileImporterGet: vi.fn(),
+  fileImporterPost: vi.fn(),
+  fileImporterDel: vi.fn(),
 }));
 
-import { get, post, del } from '@/lib/api/client';
+import {
+  fileImporterGet,
+  fileImporterPost,
+  fileImporterDel,
+} from '@/lib/api/client';
 // This import WILL FAIL until implemented - that's the point of TDD!
 import FileUploadModal from '@/components/file-import/FileUploadModal';
 
-const mockGet = get as ReturnType<typeof vitest.fn>;
-const mockPost = post as ReturnType<typeof vitest.fn>;
-const mockDel = del as ReturnType<typeof vitest.fn>;
+const mockFileImporterGet = fileImporterGet as ReturnType<typeof vitest.fn>;
+const mockFileImporterPost = fileImporterPost as ReturnType<typeof vitest.fn>;
+const mockFileImporterDel = fileImporterDel as ReturnType<typeof vitest.fn>;
 
 // Type definitions based on FileImporterAPIDefinition.yaml
 interface FileDetails {
@@ -54,7 +60,9 @@ interface FileDetails {
 }
 
 // Mock data factory
-const createMockFileDetails = (overrides: Partial<FileDetails> = {}): FileDetails => ({
+const createMockFileDetails = (
+  overrides: Partial<FileDetails> = {},
+): FileDetails => ({
   FileLogId: 1,
   FileSettingId: 1,
   FileFormatId: 1,
@@ -89,20 +97,22 @@ describe('Epic 2, Story 3: File Upload Modal', () => {
           portfolioName="Coronation Fund"
           statusColor="Gray"
           fileDetails={null}
-        />
+        />,
       );
 
       expect(screen.getByRole('dialog')).toBeInTheDocument();
       expect(screen.getByText('Holdings')).toBeInTheDocument();
       expect(screen.getByText('Coronation Fund')).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /upload file/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /upload file/i }),
+      ).toBeInTheDocument();
     });
   });
 
   describe('Modal Display - Complete File', () => {
     it('displays file details with "Cancel File", "Re-upload", and file info for complete files', () => {
       const fileDetails = createMockFileDetails({ StatusColor: 'Green' });
-      mockGet.mockResolvedValue({ FileDetails: fileDetails });
+      mockFileImporterGet.mockResolvedValue({ FileDetails: fileDetails });
 
       render(
         <FileUploadModal
@@ -112,22 +122,28 @@ describe('Epic 2, Story 3: File Upload Modal', () => {
           portfolioName="Coronation Fund"
           statusColor="Green"
           fileDetails={fileDetails}
-        />
+        />,
       );
 
       expect(screen.getByRole('dialog')).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /cancel file/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /re-upload/i })).toBeInTheDocument();
-      expect(screen.getByText('202403_CORONATION_Holdings.csv')).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /cancel file/i }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /re-upload/i }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText('202403_CORONATION_Holdings.csv'),
+      ).toBeInTheDocument();
     });
 
     it('displays "View Errors" button for failed files', () => {
       const fileDetails = createMockFileDetails({
         StatusColor: 'Red',
         Message: 'Validation failed',
-        InvalidReasons: 'Format error'
+        InvalidReasons: 'Format error',
       });
-      mockGet.mockResolvedValue({ FileDetails: fileDetails });
+      mockFileImporterGet.mockResolvedValue({ FileDetails: fileDetails });
 
       render(
         <FileUploadModal
@@ -137,10 +153,12 @@ describe('Epic 2, Story 3: File Upload Modal', () => {
           portfolioName="Coronation Fund"
           statusColor="Red"
           fileDetails={fileDetails}
-        />
+        />,
       );
 
-      expect(screen.getByRole('button', { name: /view errors/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /view errors/i }),
+      ).toBeInTheDocument();
     });
   });
 
@@ -148,9 +166,9 @@ describe('Epic 2, Story 3: File Upload Modal', () => {
     it('displays "Cancel File" button and progress indicator for busy files', () => {
       const fileDetails = createMockFileDetails({
         StatusColor: 'Yellow',
-        Message: 'Processing'
+        Message: 'Processing',
       });
-      mockGet.mockResolvedValue({ FileDetails: fileDetails });
+      mockFileImporterGet.mockResolvedValue({ FileDetails: fileDetails });
 
       render(
         <FileUploadModal
@@ -160,10 +178,12 @@ describe('Epic 2, Story 3: File Upload Modal', () => {
           portfolioName="Coronation Fund"
           statusColor="Yellow"
           fileDetails={fileDetails}
-        />
+        />,
       );
 
-      expect(screen.getByRole('button', { name: /cancel file/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /cancel file/i }),
+      ).toBeInTheDocument();
       expect(screen.getByRole('progressbar')).toBeInTheDocument();
       expect(screen.getByText(/processing/i)).toBeInTheDocument();
     });
@@ -181,7 +201,7 @@ describe('Epic 2, Story 3: File Upload Modal', () => {
           portfolioName="Coronation Fund"
           statusColor="Gray"
           fileDetails={null}
-        />
+        />,
       );
 
       const uploadButton = screen.getByRole('button', { name: /upload file/i });
@@ -194,7 +214,7 @@ describe('Epic 2, Story 3: File Upload Modal', () => {
 
     it('uploads file and shows progress bar', async () => {
       const user = userEvent.setup();
-      mockPost.mockResolvedValue({ message: 'Upload successful' });
+      mockFileImporterPost.mockResolvedValue({ message: 'Upload successful' });
 
       render(
         <FileUploadModal
@@ -204,19 +224,23 @@ describe('Epic 2, Story 3: File Upload Modal', () => {
           portfolioName="Coronation Fund"
           statusColor="Gray"
           fileDetails={null}
-        />
+        />,
       );
 
       const uploadButton = screen.getByRole('button', { name: /upload file/i });
       await user.click(uploadButton);
 
       const fileInput = screen.getByLabelText(/select file|choose file/i);
-      const file = new File(['test content'], 'holdings.csv', { type: 'text/csv' });
+      const file = new File(['test content'], 'holdings.csv', {
+        type: 'text/csv',
+      });
 
       await user.upload(fileInput, file);
 
       // Click upload/submit button
-      const submitButton = screen.getByRole('button', { name: /upload|submit/i });
+      const submitButton = screen.getByRole('button', {
+        name: /upload|submit/i,
+      });
       await user.click(submitButton);
 
       // Progress bar should appear
@@ -227,7 +251,9 @@ describe('Epic 2, Story 3: File Upload Modal', () => {
 
     it('displays success message after upload completes', async () => {
       const user = userEvent.setup();
-      mockPost.mockResolvedValue({ message: 'File uploaded successfully, validation in progress' });
+      mockFileImporterPost.mockResolvedValue({
+        message: 'File uploaded successfully, validation in progress',
+      });
 
       render(
         <FileUploadModal
@@ -237,28 +263,34 @@ describe('Epic 2, Story 3: File Upload Modal', () => {
           portfolioName="Coronation Fund"
           statusColor="Gray"
           fileDetails={null}
-        />
+        />,
       );
 
       const uploadButton = screen.getByRole('button', { name: /upload file/i });
       await user.click(uploadButton);
 
       const fileInput = screen.getByLabelText(/select file|choose file/i);
-      const file = new File(['test content'], 'holdings.csv', { type: 'text/csv' });
+      const file = new File(['test content'], 'holdings.csv', {
+        type: 'text/csv',
+      });
 
       await user.upload(fileInput, file);
 
-      const submitButton = screen.getByRole('button', { name: /upload|submit/i });
+      const submitButton = screen.getByRole('button', {
+        name: /upload|submit/i,
+      });
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/uploaded successfully|validation in progress/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/uploaded successfully|validation in progress/i),
+        ).toBeInTheDocument();
       });
     });
 
     it('calls upload API with correct parameters', async () => {
       const user = userEvent.setup();
-      mockPost.mockResolvedValue({ message: 'Upload successful' });
+      mockFileImporterPost.mockResolvedValue({ message: 'Upload successful' });
 
       render(
         <FileUploadModal
@@ -270,22 +302,26 @@ describe('Epic 2, Story 3: File Upload Modal', () => {
           fileDetails={null}
           fileSettingId={5}
           reportBatchId={123}
-        />
+        />,
       );
 
       const uploadButton = screen.getByRole('button', { name: /upload file/i });
       await user.click(uploadButton);
 
       const fileInput = screen.getByLabelText(/select file|choose file/i);
-      const file = new File(['test content'], 'holdings.csv', { type: 'text/csv' });
+      const file = new File(['test content'], 'holdings.csv', {
+        type: 'text/csv',
+      });
 
       await user.upload(fileInput, file);
 
-      const submitButton = screen.getByRole('button', { name: /upload|submit/i });
+      const submitButton = screen.getByRole('button', {
+        name: /upload|submit/i,
+      });
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(mockPost).toHaveBeenCalledWith(
+        expect(mockFileImporterPost).toHaveBeenCalledWith(
           expect.stringContaining('/file/upload'),
           expect.any(FormData),
           expect.objectContaining({
@@ -294,7 +330,7 @@ describe('Epic 2, Story 3: File Upload Modal', () => {
               ReportBatchId: 123,
               FileName: 'holdings.csv',
             }),
-          })
+          }),
         );
       });
     });
@@ -313,7 +349,7 @@ describe('Epic 2, Story 3: File Upload Modal', () => {
           portfolioName="Coronation Fund"
           statusColor="Green"
           fileDetails={fileDetails}
-        />
+        />,
       );
 
       const cancelButton = screen.getByRole('button', { name: /cancel file/i });
@@ -327,8 +363,13 @@ describe('Epic 2, Story 3: File Upload Modal', () => {
 
     it('cancels file and updates status to "Missing" after confirmation', async () => {
       const user = userEvent.setup();
-      const fileDetails = createMockFileDetails({ StatusColor: 'Green', FileLogId: 123 });
-      mockDel.mockResolvedValue({ message: 'File canceled successfully' });
+      const fileDetails = createMockFileDetails({
+        StatusColor: 'Green',
+        FileLogId: 123,
+      });
+      mockFileImporterDel.mockResolvedValue({
+        message: 'File canceled successfully',
+      });
 
       const onClose = vi.fn();
 
@@ -340,24 +381,24 @@ describe('Epic 2, Story 3: File Upload Modal', () => {
           portfolioName="Coronation Fund"
           statusColor="Green"
           fileDetails={fileDetails}
-        />
+        />,
       );
 
       const cancelButton = screen.getByRole('button', { name: /cancel file/i });
       await user.click(cancelButton);
 
       // Confirm cancellation
-      const confirmButton = await screen.findByRole('button', { name: /confirm|yes/i });
+      const confirmButton = await screen.findByRole('button', {
+        name: /confirm|yes/i,
+      });
       await user.click(confirmButton);
 
       await waitFor(() => {
-        expect(mockDel).toHaveBeenCalledWith(
+        expect(mockFileImporterDel).toHaveBeenCalledWith(
           expect.stringContaining('/file'),
           expect.objectContaining({
-            params: expect.objectContaining({
-              FileLogId: 123,
-            }),
-          })
+            FileLogId: 123,
+          }),
         );
       });
 
@@ -384,11 +425,15 @@ describe('Epic 2, Story 3: File Upload Modal', () => {
           portfolioName="Coronation Fund"
           statusColor="Green"
           fileDetails={fileDetails}
-        />
+        />,
       );
 
-      expect(screen.getByText('202403_CORONATION_Holdings.csv')).toBeInTheDocument();
-      expect(screen.getByText(/CORONATION_Holdings_\*\.csv/)).toBeInTheDocument();
+      expect(
+        screen.getByText('202403_CORONATION_Holdings.csv'),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/CORONATION_Holdings_\*\.csv/),
+      ).toBeInTheDocument();
       expect(screen.getByText(/march|mar.*2024/i)).toBeInTheDocument();
     });
 
@@ -397,7 +442,7 @@ describe('Epic 2, Story 3: File Upload Modal', () => {
       const fileDetails = createMockFileDetails({
         FileName: '202403_CORONATION_Holdings.csv',
       });
-      mockGet.mockResolvedValue(new Blob(['file content']));
+      mockFileImporterGet.mockResolvedValue(new Blob(['file content']));
 
       render(
         <FileUploadModal
@@ -407,20 +452,20 @@ describe('Epic 2, Story 3: File Upload Modal', () => {
           portfolioName="Coronation Fund"
           statusColor="Green"
           fileDetails={fileDetails}
-        />
+        />,
       );
 
-      const exportButton = screen.getByRole('button', { name: /export file|download/i });
+      const exportButton = screen.getByRole('button', {
+        name: /export file|download/i,
+      });
       await user.click(exportButton);
 
       await waitFor(() => {
-        expect(mockGet).toHaveBeenCalledWith(
+        expect(mockFileImporterGet).toHaveBeenCalledWith(
           expect.stringContaining('/file'),
           expect.objectContaining({
-            params: expect.objectContaining({
-              FilePath: expect.any(String),
-            }),
-          })
+            FilePath: expect.any(String),
+          }),
         );
       });
     });
@@ -429,7 +474,7 @@ describe('Epic 2, Story 3: File Upload Modal', () => {
   describe('Error Handling', () => {
     it('displays error message when upload fails', async () => {
       const user = userEvent.setup();
-      mockPost.mockRejectedValue(new Error('Upload failed'));
+      mockFileImporterPost.mockRejectedValue(new Error('Upload failed'));
 
       render(
         <FileUploadModal
@@ -439,18 +484,22 @@ describe('Epic 2, Story 3: File Upload Modal', () => {
           portfolioName="Coronation Fund"
           statusColor="Gray"
           fileDetails={null}
-        />
+        />,
       );
 
       const uploadButton = screen.getByRole('button', { name: /upload file/i });
       await user.click(uploadButton);
 
       const fileInput = screen.getByLabelText(/select file|choose file/i);
-      const file = new File(['test content'], 'holdings.csv', { type: 'text/csv' });
+      const file = new File(['test content'], 'holdings.csv', {
+        type: 'text/csv',
+      });
 
       await user.upload(fileInput, file);
 
-      const submitButton = screen.getByRole('button', { name: /upload|submit/i });
+      const submitButton = screen.getByRole('button', {
+        name: /upload|submit/i,
+      });
       await user.click(submitButton);
 
       await waitFor(() => {
@@ -463,7 +512,7 @@ describe('Epic 2, Story 3: File Upload Modal', () => {
     it('displays error message when cancel fails', async () => {
       const user = userEvent.setup();
       const fileDetails = createMockFileDetails({ FileLogId: 123 });
-      mockDel.mockRejectedValue(new Error('Cancel failed'));
+      mockFileImporterDel.mockRejectedValue(new Error('Cancel failed'));
 
       render(
         <FileUploadModal
@@ -473,13 +522,15 @@ describe('Epic 2, Story 3: File Upload Modal', () => {
           portfolioName="Coronation Fund"
           statusColor="Green"
           fileDetails={fileDetails}
-        />
+        />,
       );
 
       const cancelButton = screen.getByRole('button', { name: /cancel file/i });
       await user.click(cancelButton);
 
-      const confirmButton = await screen.findByRole('button', { name: /confirm|yes/i });
+      const confirmButton = await screen.findByRole('button', {
+        name: /confirm|yes/i,
+      });
       await user.click(confirmButton);
 
       await waitFor(() => {
@@ -501,7 +552,7 @@ describe('Epic 2, Story 3: File Upload Modal', () => {
           portfolioName="Coronation Fund"
           statusColor="Green"
           fileDetails={fileDetails}
-        />
+        />,
       );
 
       const results = await axe(container);
@@ -518,7 +569,7 @@ describe('Epic 2, Story 3: File Upload Modal', () => {
           portfolioName="Coronation Fund"
           statusColor="Green"
           fileDetails={fileDetails}
-        />
+        />,
       );
 
       const dialog = screen.getByRole('dialog');

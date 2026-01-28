@@ -18,6 +18,7 @@ import {
   MONTHLY_API_BASE_URL,
   FILE_IMPORTER_API_BASE_URL,
   DATA_MAINTENANCE_API_BASE_URL,
+  API_KEY,
 } from '@/lib/utils/constants';
 import type {
   APIError,
@@ -124,7 +125,10 @@ function buildHeaders(
   customHeaders?: HeadersInit,
   body?: BodyInit,
 ): Record<string, string> {
-  const baseHeaders: Record<string, string> = {};
+  const baseHeaders: Record<string, string> = {
+    // Add API key to all requests
+    [API_KEY.HEADER_NAME]: API_KEY.VALUE,
+  };
 
   // Convert HeadersInit to plain object if needed
   if (customHeaders) {
@@ -578,16 +582,43 @@ export async function fileImporterGet<T>(
 }
 
 /**
+ * Configuration for File Importer POST requests
+ */
+interface FileImporterPostConfig {
+  params?: Record<string, string | number | boolean | undefined>;
+  lastChangedUser?: string;
+}
+
+/**
  * Convenience method for File Importer API POST requests
+ * Supports FormData for file uploads and query params
  */
 export async function fileImporterPost<T>(
   endpoint: string,
   body?: unknown,
-  lastChangedUser?: string,
+  config?: FileImporterPostConfig,
 ): Promise<T> {
   return apiClient<T>(endpoint, {
     method: 'POST',
-    body: body ? JSON.stringify(body) : undefined,
+    body:
+      body instanceof FormData ? body : body ? JSON.stringify(body) : undefined,
+    params: config?.params,
+    lastChangedUser: config?.lastChangedUser,
+    baseUrl: FILE_IMPORTER_API_BASE_URL,
+  });
+}
+
+/**
+ * Convenience method for File Importer API DELETE requests
+ */
+export async function fileImporterDel<T>(
+  endpoint: string,
+  params?: Record<string, string | number | boolean | undefined>,
+  lastChangedUser?: string,
+): Promise<T> {
+  return apiClient<T>(endpoint, {
+    method: 'DELETE',
+    params,
     lastChangedUser,
     baseUrl: FILE_IMPORTER_API_BASE_URL,
   });

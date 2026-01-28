@@ -105,7 +105,7 @@ describe('Epic 1, Story 4: Start Page - Navigation Links', () => {
       const fileUploadsLink = screen.getByRole('link', {
         name: /File Uploads/i,
       });
-      expect(fileUploadsLink).toHaveAttribute('href', '/file-uploads');
+      expect(fileUploadsLink).toHaveAttribute('href', '/imports/portfolio');
     });
 
     it('navigates to Data Confirmation screen when Data Confirmation is clicked', async () => {
@@ -277,7 +277,7 @@ describe('Epic 1, Story 4: Start Page - Navigation Links', () => {
 
       // Find the card container and get its link
       const uploadCard = screen.getByText(/Upload Files/i).closest('a');
-      expect(uploadCard).toHaveAttribute('href', '/file-uploads');
+      expect(uploadCard).toHaveAttribute('href', '/imports/portfolio');
     });
   });
 

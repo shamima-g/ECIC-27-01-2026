@@ -19,11 +19,20 @@ export const MONTHLY_API_BASE_URL =
 
 export const FILE_IMPORTER_API_BASE_URL =
   process.env.NEXT_PUBLIC_FILE_IMPORTER_API_BASE_URL ||
-  'http://localhost:10002';
+  'http://localhost:10002/investinsight';
 
 export const DATA_MAINTENANCE_API_BASE_URL =
   process.env.NEXT_PUBLIC_DATA_MAINTENANCE_API_BASE_URL ||
   'http://localhost:10001';
+
+/**
+ * API authentication key
+ * TODO: Replace with environment variable for production
+ */
+export const API_KEY = {
+  HEADER_NAME: 'X-API-Key',
+  VALUE: process.env.NEXT_PUBLIC_API_KEY || 'Test123',
+} as const;
 
 /**
  * Default pagination settings

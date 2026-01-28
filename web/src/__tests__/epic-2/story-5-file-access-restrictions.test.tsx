@@ -15,22 +15,24 @@ import userEvent from '@testing-library/user-event';
 import { axe } from 'vitest-axe';
 import { vi as vitest } from 'vitest';
 
-
 // Mock the API client
 vi.mock('@/lib/api/client', () => ({
   get: vi.fn(),
   post: vi.fn(),
   put: vi.fn(),
   del: vi.fn(),
+  fileImporterGet: vi.fn(),
+  fileImporterPost: vi.fn(),
+  fileImporterDel: vi.fn(),
   monthlyGet: vi.fn(),
 }));
 
-import { get, monthlyGet } from '@/lib/api/client';
+import { fileImporterGet, monthlyGet } from '@/lib/api/client';
 // These imports WILL FAIL until implemented - that's the point of TDD!
 import PortfolioImportsPage from '@/app/imports/portfolio/page';
 import OtherImportsPage from '@/app/imports/other/page';
 
-const mockGet = get as ReturnType<typeof vitest.fn>;
+const mockFileImporterGet = fileImporterGet as ReturnType<typeof vitest.fn>;
 const mockMonthlyGet = monthlyGet as ReturnType<typeof vitest.fn>;
 
 // Type definitions based on MonthlyAPIDefinition.yaml
@@ -45,7 +47,9 @@ interface MonthlyReportBatch {
 }
 
 // Mock data factory
-const createMockBatch = (overrides: Partial<MonthlyReportBatch> = {}): MonthlyReportBatch => ({
+const createMockBatch = (
+  overrides: Partial<MonthlyReportBatch> = {},
+): MonthlyReportBatch => ({
   ReportBatchId: 1,
   ReportDate: '2024-03-31',
   WorkflowInstanceId: 'wf-123',
@@ -84,9 +88,11 @@ describe('Epic 2, Story 5: File Access Restrictions', () => {
 
   describe('Access Control - Data Preparation Phase (Unlocked)', () => {
     it('allows file uploads when LastExecutedActivityName is "PrepareData" on Portfolio Imports', async () => {
-      const batch = createMockBatch({ LastExecutedActivityName: 'PrepareData' });
-      mockMonthlyGet.mockResolvedValue(batch);
-      mockGet.mockResolvedValue(createMockPortfoliosResponse());
+      const batch = createMockBatch({
+        LastExecutedActivityName: 'PrepareData',
+      });
+      mockMonthlyGet.mockResolvedValue([batch]);
+      mockFileImporterGet.mockResolvedValue(createMockPortfoliosResponse());
 
       render(<PortfolioImportsPage />);
 
@@ -101,9 +107,11 @@ describe('Epic 2, Story 5: File Access Restrictions', () => {
     });
 
     it('allows file uploads when LastExecutedActivityName is "PrepareData" on Other Imports', async () => {
-      const batch = createMockBatch({ LastExecutedActivityName: 'PrepareData' });
-      mockMonthlyGet.mockResolvedValue(batch);
-      mockGet.mockResolvedValue(createMockOtherFilesResponse());
+      const batch = createMockBatch({
+        LastExecutedActivityName: 'PrepareData',
+      });
+      mockMonthlyGet.mockResolvedValue([batch]);
+      mockFileImporterGet.mockResolvedValue(createMockOtherFilesResponse());
 
       render(<OtherImportsPage />);
 
@@ -118,9 +126,11 @@ describe('Epic 2, Story 5: File Access Restrictions', () => {
     });
 
     it('does not display lock message during data preparation phase', async () => {
-      const batch = createMockBatch({ LastExecutedActivityName: 'PrepareData' });
-      mockMonthlyGet.mockResolvedValue(batch);
-      mockGet.mockResolvedValue(createMockPortfoliosResponse());
+      const batch = createMockBatch({
+        LastExecutedActivityName: 'PrepareData',
+      });
+      mockMonthlyGet.mockResolvedValue([batch]);
+      mockFileImporterGet.mockResolvedValue(createMockPortfoliosResponse());
 
       render(<PortfolioImportsPage />);
 
@@ -129,7 +139,9 @@ describe('Epic 2, Story 5: File Access Restrictions', () => {
       });
 
       // Should not show lock message
-      expect(screen.queryByText(/locked during approval/i)).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(/locked during approval/i),
+      ).not.toBeInTheDocument();
     });
   });
 
@@ -144,21 +156,27 @@ describe('Epic 2, Story 5: File Access Restrictions', () => {
     approvalPhases.forEach(({ name, activityName }) => {
       describe(`During ${name}`, () => {
         it('displays lock message on Portfolio Imports', async () => {
-          const batch = createMockBatch({ LastExecutedActivityName: activityName });
-          mockMonthlyGet.mockResolvedValue(batch);
-          mockGet.mockResolvedValue(createMockPortfoliosResponse());
+          const batch = createMockBatch({
+            LastExecutedActivityName: activityName,
+          });
+          mockMonthlyGet.mockResolvedValue([batch]);
+          mockFileImporterGet.mockResolvedValue(createMockPortfoliosResponse());
 
           render(<PortfolioImportsPage />);
 
           await waitFor(() => {
-            expect(screen.getByText(/file uploads are locked during approval/i)).toBeInTheDocument();
+            expect(
+              screen.getByText(/file uploads are locked during approval/i),
+            ).toBeInTheDocument();
           });
         });
 
         it('disables upload and cancel buttons on Other Imports', async () => {
-          const batch = createMockBatch({ LastExecutedActivityName: activityName });
-          mockMonthlyGet.mockResolvedValue(batch);
-          mockGet.mockResolvedValue(createMockOtherFilesResponse());
+          const batch = createMockBatch({
+            LastExecutedActivityName: activityName,
+          });
+          mockMonthlyGet.mockResolvedValue([batch]);
+          mockFileImporterGet.mockResolvedValue(createMockOtherFilesResponse());
 
           render(<OtherImportsPage />);
 
@@ -173,18 +191,24 @@ describe('Epic 2, Story 5: File Access Restrictions', () => {
 
         it('allows read-only access - user can view file details', async () => {
           const user = userEvent.setup();
-          const batch = createMockBatch({ LastExecutedActivityName: activityName });
-          mockMonthlyGet.mockResolvedValue(batch);
-          mockGet.mockResolvedValue(createMockPortfoliosResponse());
+          const batch = createMockBatch({
+            LastExecutedActivityName: activityName,
+          });
+          mockMonthlyGet.mockResolvedValue([batch]);
+          mockFileImporterGet.mockResolvedValue(createMockPortfoliosResponse());
 
           render(<PortfolioImportsPage />);
 
           await waitFor(() => {
-            expect(screen.getByText(/file uploads are locked during approval/i)).toBeInTheDocument();
+            expect(
+              screen.getByText(/file uploads are locked during approval/i),
+            ).toBeInTheDocument();
           });
 
           // Can still click to view details (read-only)
-          const statusIcons = screen.getAllByRole('button', { name: /view|details/i });
+          const statusIcons = screen.getAllByRole('button', {
+            name: /view|details/i,
+          });
           if (statusIcons.length > 0) {
             await user.click(statusIcons[0]);
 
@@ -194,8 +218,12 @@ describe('Epic 2, Story 5: File Access Restrictions', () => {
             });
 
             // Upload/cancel buttons should not be present
-            expect(screen.queryByRole('button', { name: /upload file/i })).not.toBeInTheDocument();
-            expect(screen.queryByRole('button', { name: /cancel file/i })).not.toBeInTheDocument();
+            expect(
+              screen.queryByRole('button', { name: /upload file/i }),
+            ).not.toBeInTheDocument();
+            expect(
+              screen.queryByRole('button', { name: /cancel file/i }),
+            ).not.toBeInTheDocument();
           }
         });
       });
@@ -204,9 +232,11 @@ describe('Epic 2, Story 5: File Access Restrictions', () => {
 
   describe('Access Control - After Rejection', () => {
     it('unlocks file uploads when workflow returns to "PrepareData" after rejection', async () => {
-      const batch = createMockBatch({ LastExecutedActivityName: 'PrepareData' });
-      mockMonthlyGet.mockResolvedValue(batch);
-      mockGet.mockResolvedValue(createMockPortfoliosResponse());
+      const batch = createMockBatch({
+        LastExecutedActivityName: 'PrepareData',
+      });
+      mockMonthlyGet.mockResolvedValue([batch]);
+      mockFileImporterGet.mockResolvedValue(createMockPortfoliosResponse());
 
       render(<PortfolioImportsPage />);
 
@@ -215,7 +245,9 @@ describe('Epic 2, Story 5: File Access Restrictions', () => {
       });
 
       // Should not show lock message
-      expect(screen.queryByText(/locked during approval/i)).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(/locked during approval/i),
+      ).not.toBeInTheDocument();
 
       // Upload actions should be available
       const statusIcons = screen.getAllByRole('button');
@@ -227,8 +259,8 @@ describe('Epic 2, Story 5: File Access Restrictions', () => {
         LastExecutedActivityName: 'PrepareData',
         WorkflowStatusName: 'Data Preparation', // Returned from approval
       });
-      mockMonthlyGet.mockResolvedValue(batch);
-      mockGet.mockResolvedValue(createMockPortfoliosResponse());
+      mockMonthlyGet.mockResolvedValue([batch]);
+      mockFileImporterGet.mockResolvedValue(createMockPortfoliosResponse());
 
       render(<PortfolioImportsPage />);
 
@@ -246,8 +278,10 @@ describe('Epic 2, Story 5: File Access Restrictions', () => {
   describe('Read-Only Access During Approval', () => {
     it('allows viewing file details but not uploading during approval', async () => {
       const user = userEvent.setup();
-      const batch = createMockBatch({ LastExecutedActivityName: 'ApproveFirstLevel' });
-      mockMonthlyGet.mockResolvedValue(batch);
+      const batch = createMockBatch({
+        LastExecutedActivityName: 'ApproveFirstLevel',
+      });
+      mockMonthlyGet.mockResolvedValue([batch]);
 
       const fileDetails = {
         FileLogId: 1,
@@ -255,18 +289,22 @@ describe('Epic 2, Story 5: File Access Restrictions', () => {
         StatusColor: 'Green',
       };
 
-      mockGet
+      mockFileImporterGet
         .mockResolvedValueOnce(createMockPortfoliosResponse())
         .mockResolvedValueOnce({ FileDetails: fileDetails });
 
       render(<PortfolioImportsPage />);
 
       await waitFor(() => {
-        expect(screen.getByText(/file uploads are locked during approval/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/file uploads are locked during approval/i),
+        ).toBeInTheDocument();
       });
 
       // Click view button (read-only access)
-      const viewButtons = screen.getAllByRole('button', { name: /view|details/i });
+      const viewButtons = screen.getAllByRole('button', {
+        name: /view|details/i,
+      });
       if (viewButtons.length > 0) {
         await user.click(viewButtons[0]);
 
@@ -278,18 +316,26 @@ describe('Epic 2, Story 5: File Access Restrictions', () => {
         expect(screen.getByText('202403_Holdings.csv')).toBeInTheDocument();
 
         // Should not show upload/cancel buttons
-        expect(screen.queryByRole('button', { name: /upload file/i })).not.toBeInTheDocument();
-        expect(screen.queryByRole('button', { name: /cancel file/i })).not.toBeInTheDocument();
+        expect(
+          screen.queryByRole('button', { name: /upload file/i }),
+        ).not.toBeInTheDocument();
+        expect(
+          screen.queryByRole('button', { name: /cancel file/i }),
+        ).not.toBeInTheDocument();
 
         // Should still allow export
-        expect(screen.queryByRole('button', { name: /export|download/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /export|download/i }),
+        ).toBeInTheDocument();
       }
     });
 
     it('allows viewing validation errors during approval', async () => {
       const user = userEvent.setup();
-      const batch = createMockBatch({ LastExecutedActivityName: 'ApproveSecondLevel' });
-      mockMonthlyGet.mockResolvedValue(batch);
+      const batch = createMockBatch({
+        LastExecutedActivityName: 'ApproveSecondLevel',
+      });
+      mockMonthlyGet.mockResolvedValue([batch]);
 
       const fileDetails = {
         FileLogId: 1,
@@ -298,18 +344,22 @@ describe('Epic 2, Story 5: File Access Restrictions', () => {
         InvalidReasons: 'Validation failed',
       };
 
-      mockGet
+      mockFileImporterGet
         .mockResolvedValueOnce(createMockPortfoliosResponse())
         .mockResolvedValueOnce({ FileDetails: fileDetails });
 
       render(<PortfolioImportsPage />);
 
       await waitFor(() => {
-        expect(screen.getByText(/file uploads are locked during approval/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/file uploads are locked during approval/i),
+        ).toBeInTheDocument();
       });
 
       // Can view errors even during approval (read-only)
-      const viewButtons = screen.getAllByRole('button', { name: /view|details/i });
+      const viewButtons = screen.getAllByRole('button', {
+        name: /view|details/i,
+      });
       if (viewButtons.length > 0) {
         await user.click(viewButtons[0]);
 
@@ -318,25 +368,31 @@ describe('Epic 2, Story 5: File Access Restrictions', () => {
         });
 
         // Should be able to view errors button
-        expect(screen.queryByRole('button', { name: /view errors/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /view errors/i }),
+        ).toBeInTheDocument();
 
         // But retry validation should be disabled
-        expect(screen.queryByRole('button', { name: /retry validation/i })).toBeDisabled();
+        expect(
+          screen.queryByRole('button', { name: /retry validation/i }),
+        ).toBeDisabled();
       }
     });
   });
 
   describe('API Integration', () => {
     it('fetches current batch to determine access level', async () => {
-      const batch = createMockBatch({ LastExecutedActivityName: 'PrepareData' });
-      mockMonthlyGet.mockResolvedValue(batch);
-      mockGet.mockResolvedValue(createMockPortfoliosResponse());
+      const batch = createMockBatch({
+        LastExecutedActivityName: 'PrepareData',
+      });
+      mockMonthlyGet.mockResolvedValue([batch]);
+      mockFileImporterGet.mockResolvedValue(createMockPortfoliosResponse());
 
       render(<PortfolioImportsPage />);
 
       await waitFor(() => {
         expect(mockMonthlyGet).toHaveBeenCalledWith(
-          expect.stringContaining('/monthly-report-batch')
+          expect.stringContaining('/report-batches'),
         );
       });
     });
@@ -344,14 +400,18 @@ describe('Epic 2, Story 5: File Access Restrictions', () => {
 
   describe('Visual Indicators', () => {
     it('greys out disabled sections during approval phases', async () => {
-      const batch = createMockBatch({ LastExecutedActivityName: 'ApproveFirstLevel' });
-      mockMonthlyGet.mockResolvedValue(batch);
-      mockGet.mockResolvedValue(createMockPortfoliosResponse());
+      const batch = createMockBatch({
+        LastExecutedActivityName: 'ApproveFirstLevel',
+      });
+      mockMonthlyGet.mockResolvedValue([batch]);
+      mockFileImporterGet.mockResolvedValue(createMockPortfoliosResponse());
 
       render(<PortfolioImportsPage />);
 
       await waitFor(() => {
-        expect(screen.getByText(/file uploads are locked during approval/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/file uploads are locked during approval/i),
+        ).toBeInTheDocument();
       });
 
       // Find the disabled/locked section
@@ -363,7 +423,7 @@ describe('Epic 2, Story 5: File Access Restrictions', () => {
   describe('Error Handling', () => {
     it('displays error message when batch fetch fails', async () => {
       mockMonthlyGet.mockRejectedValue(new Error('Network error'));
-      mockGet.mockResolvedValue(createMockPortfoliosResponse());
+      mockFileImporterGet.mockResolvedValue(createMockPortfoliosResponse());
 
       render(<PortfolioImportsPage />);
 
@@ -375,9 +435,11 @@ describe('Epic 2, Story 5: File Access Restrictions', () => {
     });
 
     it('defaults to locked state when LastExecutedActivityName is unknown', async () => {
-      const batch = createMockBatch({ LastExecutedActivityName: 'UnknownActivity' });
-      mockMonthlyGet.mockResolvedValue(batch);
-      mockGet.mockResolvedValue(createMockPortfoliosResponse());
+      const batch = createMockBatch({
+        LastExecutedActivityName: 'UnknownActivity',
+      });
+      mockMonthlyGet.mockResolvedValue([batch]);
+      mockFileImporterGet.mockResolvedValue(createMockPortfoliosResponse());
 
       render(<PortfolioImportsPage />);
 
@@ -390,14 +452,18 @@ describe('Epic 2, Story 5: File Access Restrictions', () => {
 
   describe('Accessibility', () => {
     it('has no accessibility violations when locked', async () => {
-      const batch = createMockBatch({ LastExecutedActivityName: 'ApproveFirstLevel' });
-      mockMonthlyGet.mockResolvedValue(batch);
-      mockGet.mockResolvedValue(createMockPortfoliosResponse());
+      const batch = createMockBatch({
+        LastExecutedActivityName: 'ApproveFirstLevel',
+      });
+      mockMonthlyGet.mockResolvedValue([batch]);
+      mockFileImporterGet.mockResolvedValue(createMockPortfoliosResponse());
 
       const { container } = render(<PortfolioImportsPage />);
 
       await waitFor(() => {
-        expect(screen.getByText(/file uploads are locked during approval/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/file uploads are locked during approval/i),
+        ).toBeInTheDocument();
       });
 
       const results = await axe(container);
@@ -405,9 +471,11 @@ describe('Epic 2, Story 5: File Access Restrictions', () => {
     });
 
     it('has no accessibility violations when unlocked', async () => {
-      const batch = createMockBatch({ LastExecutedActivityName: 'PrepareData' });
-      mockMonthlyGet.mockResolvedValue(batch);
-      mockGet.mockResolvedValue(createMockPortfoliosResponse());
+      const batch = createMockBatch({
+        LastExecutedActivityName: 'PrepareData',
+      });
+      mockMonthlyGet.mockResolvedValue([batch]);
+      mockFileImporterGet.mockResolvedValue(createMockPortfoliosResponse());
 
       const { container } = render(<PortfolioImportsPage />);
 
@@ -420,15 +488,19 @@ describe('Epic 2, Story 5: File Access Restrictions', () => {
     });
 
     it('announces lock state changes to screen readers', async () => {
-      const batch = createMockBatch({ LastExecutedActivityName: 'ApproveFirstLevel' });
-      mockMonthlyGet.mockResolvedValue(batch);
-      mockGet.mockResolvedValue(createMockPortfoliosResponse());
+      const batch = createMockBatch({
+        LastExecutedActivityName: 'ApproveFirstLevel',
+      });
+      mockMonthlyGet.mockResolvedValue([batch]);
+      mockFileImporterGet.mockResolvedValue(createMockPortfoliosResponse());
 
       render(<PortfolioImportsPage />);
 
       await waitFor(() => {
         const alert = screen.getByRole('alert');
-        expect(alert).toHaveTextContent(/file uploads are locked during approval/i);
+        expect(alert).toHaveTextContent(
+          /file uploads are locked during approval/i,
+        );
       });
     });
   });

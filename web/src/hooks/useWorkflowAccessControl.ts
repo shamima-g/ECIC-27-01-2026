@@ -74,15 +74,28 @@ export function useWorkflowAccessControl(): WorkflowAccessState {
           return;
         }
 
-        const response = await monthlyGetFn<MonthlyReportBatch>(
-          '/monthly-report-batch',
-        );
+        // Fetch all report batches and find the current (most recent unfinished) one
+        const batches =
+          await monthlyGetFn<MonthlyReportBatch[]>('/report-batches');
 
         if (cancelled) return;
 
-        // Validate response has expected shape
-        const isValidBatch = response && 'ReportDate' in response;
-        const lastActivity = response?.LastExecutedActivityName || '';
+        // Find current batch: most recent one that's not finished (FinishedAt is null)
+        // or if all are finished, use the most recent one
+        let currentBatch: MonthlyReportBatch | null = null;
+        if (Array.isArray(batches) && batches.length > 0) {
+          // Sort by ReportDate descending to get most recent first
+          const sortedBatches = [...batches].sort(
+            (a, b) =>
+              new Date(b.ReportDate).getTime() -
+              new Date(a.ReportDate).getTime(),
+          );
+          // Prefer unfinished batch, otherwise use most recent
+          currentBatch =
+            sortedBatches.find((b) => !b.FinishedAt) || sortedBatches[0];
+        }
+
+        const lastActivity = currentBatch?.LastExecutedActivityName || '';
         const isUnlocked = UNLOCKED_ACTIVITIES.includes(lastActivity);
         const isLocked = !isUnlocked;
 
@@ -90,7 +103,7 @@ export function useWorkflowAccessControl(): WorkflowAccessState {
           isLocked,
           isLoading: false,
           error: null,
-          currentBatch: isValidBatch ? response : null,
+          currentBatch,
           lastActivity,
         });
       } catch (err) {

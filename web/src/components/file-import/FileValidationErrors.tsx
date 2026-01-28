@@ -20,7 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { get, post } from '@/lib/api/client';
+import { fileImporterGet, fileImporterPost } from '@/lib/api/client';
 import type { FileFault, FileFaultsResponse } from '@/types/file-import';
 
 interface FileValidationErrorsProps {
@@ -57,11 +57,12 @@ export function FileValidationErrors({
       setIsLoading(true);
       setError(null);
 
-      const response = await get<FileFaultsResponse>('/file/faults', {
-        params: {
+      const response = await fileImporterGet<FileFaultsResponse>(
+        '/file/faults',
+        {
           FileLogId: fileLogId,
         },
-      });
+      );
 
       setFaults(response.FileFault || []);
     } catch (err) {
@@ -84,13 +85,17 @@ export function FileValidationErrors({
       setError(null);
       setSuccessMessage(null);
 
-      const postResponse = await post<{ message?: string }>('/file', null, {
-        params: {
-          FileLogId: fileLogId,
-          FileSettingId: fileSettingId,
-          FileFormatId: fileFormatId,
+      const postResponse = await fileImporterPost<{ message?: string }>(
+        '/file',
+        null,
+        {
+          params: {
+            FileLogId: fileLogId,
+            FileSettingId: fileSettingId,
+            FileFormatId: fileFormatId,
+          },
         },
-      });
+      );
 
       // Check if POST response indicates success
       if (postResponse?.message?.toLowerCase().includes('successful')) {
@@ -100,11 +105,12 @@ export function FileValidationErrors({
       }
 
       // Re-fetch faults to see if validation succeeded
-      const response = await get<FileFaultsResponse>('/file/faults', {
-        params: {
+      const response = await fileImporterGet<FileFaultsResponse>(
+        '/file/faults',
+        {
           FileLogId: fileLogId,
         },
-      });
+      );
 
       if ((response.FileFault || []).length === 0) {
         setSuccessMessage('Validation successful');
@@ -147,7 +153,7 @@ export function FileValidationErrors({
     URL.revokeObjectURL(url);
   };
 
-  if (!hasErrors && statusColor !== 'Red') {
+  if (!hasErrors && statusColor?.toLowerCase() !== 'red') {
     return null;
   }
 

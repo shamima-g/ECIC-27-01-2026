@@ -213,7 +213,7 @@ export default function HomePage() {
       <nav className="mb-8" aria-label="Main navigation">
         <div className="flex flex-wrap gap-4 items-center">
           <Link
-            href="/file-uploads"
+            href="/imports/portfolio"
             className="text-primary hover:underline font-medium"
           >
             File Uploads
@@ -431,7 +431,7 @@ export default function HomePage() {
       {/* Quick Action Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <Link
-          href="/file-uploads"
+          href="/imports/portfolio"
           className="block"
           aria-label="Quick action: upload files"
         >

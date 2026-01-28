@@ -25,7 +25,11 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { get, post, del } from '@/lib/api/client';
+import {
+  fileImporterGet,
+  fileImporterPost,
+  fileImporterDel,
+} from '@/lib/api/client';
 import type { FileDetails } from '@/types/file-import';
 import FileValidationErrors from './FileValidationErrors';
 
@@ -69,11 +73,13 @@ export function FileUploadModal({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Use fileDetails status if available (fetched from API), otherwise use prop
-  const effectiveStatusColor = fileDetails?.StatusColor || statusColor;
-  const isMissing = effectiveStatusColor === 'Gray';
-  const isBusy = effectiveStatusColor === 'Yellow';
-  const isFailed = effectiveStatusColor === 'Red';
-  const isComplete = effectiveStatusColor === 'Green';
+  // Normalize status color to handle case variations from API
+  const rawStatusColor = fileDetails?.StatusColor || statusColor;
+  const effectiveStatusColor = rawStatusColor?.toLowerCase() || 'gray';
+  const isMissing = !rawStatusColor || effectiveStatusColor === 'gray';
+  const isBusy = effectiveStatusColor === 'yellow';
+  const isFailed = effectiveStatusColor === 'red';
+  const isComplete = effectiveStatusColor === 'green';
 
   const handleUploadClick = () => {
     setShowFileInput(true);
@@ -108,7 +114,7 @@ export function FileUploadModal({
       const formData = new FormData();
       formData.append('file', selectedFile);
 
-      await post('/file/upload', formData, {
+      await fileImporterPost('/file/upload', formData, {
         params: {
           FileSettingId: fileSettingId,
           ReportBatchId: reportBatchId,
@@ -145,10 +151,8 @@ export function FileUploadModal({
       setIsDeleting(true);
       setError(null);
 
-      await del('/file', {
-        params: {
-          FileLogId: fileDetails?.FileLogId || fileLogId,
-        },
+      await fileImporterDel('/file', {
+        FileLogId: fileDetails?.FileLogId || fileLogId,
       });
 
       setShowConfirmCancel(false);
@@ -165,10 +169,8 @@ export function FileUploadModal({
     try {
       setError(null);
 
-      const blob = await get<Blob>('/file', {
-        params: {
-          FilePath: fileDetails?.FileName || '',
-        },
+      const blob = await fileImporterGet<Blob>('/file', {
+        FilePath: fileDetails?.FileName || '',
       });
 
       const url = URL.createObjectURL(blob);

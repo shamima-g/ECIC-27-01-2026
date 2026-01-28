@@ -16,7 +16,7 @@
  */
 
 import React, { useEffect, useState, useCallback } from 'react';
-import { get } from '@/lib/api/client';
+import { fileImporterGet } from '@/lib/api/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { StatusIcon } from '@/components/file-import/StatusIcon';
 import { FileUploadModal } from '@/components/file-import/FileUploadModal';
@@ -74,11 +74,9 @@ export default function OtherImportsPage() {
       currentBatch?.ReportDate,
     );
 
-    const response = await get<OtherFilesResponse>('/other-files', {
-      params: {
-        ReportMonth: reportMonth,
-        ReportYear: reportYear,
-      },
+    const response = await fileImporterGet<OtherFilesResponse>('/other-files', {
+      ReportMonth: reportMonth,
+      ReportYear: reportYear,
     });
 
     setFiles(response.Files || []);
