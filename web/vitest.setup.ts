@@ -2,7 +2,14 @@
 import '@testing-library/jest-dom/vitest';
 
 // vitest-axe matchers for accessibility testing
-import 'vitest-axe/extend-expect';
+import * as axeMatchers from 'vitest-axe/matchers';
+import { expect, vi, afterEach } from 'vitest';
+expect.extend(axeMatchers);
+
+// Ensure real timers are restored after each test to prevent test pollution
+afterEach(() => {
+  vi.useRealTimers();
+});
 
 // Polyfill for Web APIs needed by Next.js
 // These are required for testing files that import from 'next/server'

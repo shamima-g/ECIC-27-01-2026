@@ -366,27 +366,83 @@ function logResponse(response: Response): void {
 }
 
 /**
+ * Configuration object for GET requests
+ */
+interface GetConfig {
+  params?: Record<string, string | number | boolean | undefined>;
+  baseUrl?: string;
+}
+
+/**
  * Convenience method for GET requests
+ * Supports two calling patterns:
+ * 1. get(endpoint, params) - params directly
+ * 2. get(endpoint, { params, baseUrl }) - config object with params and optional baseUrl
  */
 export async function get<T>(
   endpoint: string,
-  params?: Record<string, string | number | boolean | undefined>,
+  configOrParams?:
+    | GetConfig
+    | Record<string, string | number | boolean | undefined>,
 ): Promise<T> {
-  return apiClient<T>(endpoint, { method: 'GET', params });
+  // Detect if second arg is a config object (has params property) or direct params
+  if (configOrParams && 'params' in configOrParams) {
+    const config = configOrParams as GetConfig;
+    return apiClient<T>(endpoint, {
+      method: 'GET',
+      params: config.params,
+      baseUrl: config.baseUrl,
+    });
+  }
+  // Direct params style
+  return apiClient<T>(endpoint, {
+    method: 'GET',
+    params: configOrParams as Record<
+      string,
+      string | number | boolean | undefined
+    >,
+  });
+}
+
+/**
+ * Configuration object for POST requests
+ */
+interface PostConfig {
+  params?: Record<string, string | number | boolean | undefined>;
+  baseUrl?: string;
+  lastChangedUser?: string;
 }
 
 /**
  * Convenience method for POST requests
+ * Supports config object with params and baseUrl
  */
 export async function post<T>(
   endpoint: string,
   body?: unknown,
-  lastChangedUser?: string,
+  configOrUser?: PostConfig | string,
 ): Promise<T> {
+  // Detect if third arg is a config object or just lastChangedUser string
+  if (configOrUser && typeof configOrUser === 'object') {
+    const config = configOrUser as PostConfig;
+    return apiClient<T>(endpoint, {
+      method: 'POST',
+      body:
+        body instanceof FormData
+          ? body
+          : body
+            ? JSON.stringify(body)
+            : undefined,
+      params: config.params,
+      baseUrl: config.baseUrl,
+      lastChangedUser: config.lastChangedUser,
+    });
+  }
+  // Legacy style with just lastChangedUser string
   return apiClient<T>(endpoint, {
     method: 'POST',
-    body: JSON.stringify(body),
-    lastChangedUser,
+    body: body ? JSON.stringify(body) : undefined,
+    lastChangedUser: configOrUser as string,
   });
 }
 
@@ -406,15 +462,36 @@ export async function put<T>(
 }
 
 /**
+ * Configuration object for DELETE requests
+ */
+interface DelConfig {
+  params?: Record<string, string | number | boolean | undefined>;
+  baseUrl?: string;
+  lastChangedUser?: string;
+}
+
+/**
  * Convenience method for DELETE requests
+ * Supports config object with params and baseUrl
  */
 export async function del<T>(
   endpoint: string,
-  lastChangedUser?: string,
+  configOrUser?: DelConfig | string,
 ): Promise<T> {
+  // Detect if second arg is a config object or just lastChangedUser string
+  if (configOrUser && typeof configOrUser === 'object') {
+    const config = configOrUser as DelConfig;
+    return apiClient<T>(endpoint, {
+      method: 'DELETE',
+      params: config.params,
+      baseUrl: config.baseUrl,
+      lastChangedUser: config.lastChangedUser,
+    });
+  }
+  // Legacy style with just lastChangedUser string
   return apiClient<T>(endpoint, {
     method: 'DELETE',
-    lastChangedUser,
+    lastChangedUser: configOrUser as string,
   });
 }
 

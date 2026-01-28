@@ -8,6 +8,12 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./vitest.setup.ts'],
+    // Disable file parallelism for better test isolation with fake timers
+    fileParallelism: false,
+    // Configure fake timers to auto-advance for async operations
+    fakeTimers: {
+      shouldAdvanceTime: true,
+    },
     include: [
       'src/**/__tests__/**/*.[jt]s?(x)',
       'src/**/?(*.)+(test).[jt]s?(x)',
