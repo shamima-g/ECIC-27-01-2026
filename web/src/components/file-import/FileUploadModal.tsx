@@ -76,10 +76,11 @@ export function FileUploadModal({
   // Normalize status color to handle case variations from API
   const rawStatusColor = fileDetails?.StatusColor || statusColor;
   const effectiveStatusColor = rawStatusColor?.toLowerCase() || 'gray';
-  const isMissing = !rawStatusColor || effectiveStatusColor === 'gray';
   const isBusy = effectiveStatusColor === 'yellow';
   const isFailed = effectiveStatusColor === 'red';
   const isComplete = effectiveStatusColor === 'green';
+  // isMissing is the default fallback when no other status matches (handles unknown/invalid status values)
+  const isMissing = !isComplete && !isFailed && !isBusy;
 
   const handleUploadClick = () => {
     setShowFileInput(true);

@@ -51,14 +51,14 @@ export function StatusIcon({
 
 function StatusSymbol({ statusColor }: { statusColor: FileStatusColor }) {
   switch (statusColor) {
-    case 'Gray':
-      return <span className="text-xs">-</span>;
     case 'Red':
       return <span className="text-xs font-bold">!</span>;
     case 'Green':
       return <span className="text-xs font-bold">&#10003;</span>;
+    case 'Gray':
     default:
-      return <span className="text-xs">?</span>;
+      // Treat unknown status values as Gray (not uploaded)
+      return <span className="text-xs">-</span>;
   }
 }
 
