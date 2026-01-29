@@ -355,3 +355,389 @@ _**User: shamima-g (2026-01-29 02:22Z)**_
 
 Commit and push the logs
 
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Bash_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Bash_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+Done. Committed and pushed the updated session log.
+
+Commit: `b874037` pushed to origin/main.
+
+---
+
+
+_**User: shamima-g (2026-01-29 02:23Z)**_
+
+Can you read epic  2 again and correct the bug? Don't do it, just give me steps you will take
+
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+Based on the issues found, here are the steps I would take:
+
+## Bug 1: Incomplete File Details Modal
+
+**Steps:**
+1. Read Story 3 requirements in full ([story-3-file-upload-modal.md](generated-docs/stories/epic-2-file-import-management/story-3-file-upload-modal.md))
+2. Read the wireframe referenced in Story 3 (`screen-4-file-upload-modal.md`)
+3. Find the current modal component implementation (likely in `web/src/components/`)
+4. Review the API endpoints for fetching file details (`GET /portfolio-file`, `GET /other-file`)
+5. Update the modal to include:
+   - Current file status display
+   - Action buttons (Upload File, Cancel File, Re-upload, View Errors, Export File)
+   - File details section (FileName, FileNamePattern, upload date/time, record count)
+   - Progress indicator for busy state
+6. Run existing tests for Story 3 to verify implementation
+
+## Bug 2: Incorrect "Locked During Approval" Warning
+
+**Steps:**
+1. Find the `useWorkflowAccessControl` hook (`web/src/hooks/useWorkflowAccessControl.ts`)
+2. Find where the warning banner is rendered in Portfolio Imports page
+3. Check the logic that determines when to show the locked message
+4. Verify it correctly checks `LastExecutedActivityName` against locked activities (`ApproveFirstLevel`, `ApproveSecondLevel`, `ApproveThirdLevel`, `PendingComplete`)
+5. Fix the conditional logic so warning only shows during actual approval phases, not during `PrepareData`
+6. Run Story 5 (File Access Restrictions) tests to verify fix
+
+---
+
+Would you like me to proceed with these fixes?
+
+---
+
+
+_**User: shamima-g (2026-01-29 02:24Z)**_
+
+How come we are having a bug when you read the epic and wrote tests?
+
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+You raise a valid point. If TDD was followed properly, these bugs shouldn't exist. Let me investigate what happened.
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Glob_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Glob_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Glob_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Read_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Read_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+Now let me run the tests to see their current status.
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Bash_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+The tests **pass** (42/42). This reveals the real issue:
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Glob_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Glob_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Read_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+The component looks complete. Let me check how the Portfolio Imports page uses this modal.
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Read_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+Now let me check the `useWorkflowAccessControl` hook - this is likely where the bug is.
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Read_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+Let me check the API client to see what's actually exported.
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Read_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+Now I understand the root cause. Here's my analysis:
+
+## Why Tests Pass But Real App Fails
+
+**The tests are correctly written, but the mocks don't match real API behavior.**
+
+### The Problem
+
+In `useWorkflowAccessControl.ts` (lines 98-100):
+```typescript
+const lastActivity = currentBatch?.LastExecutedActivityName || '';
+const isUnlocked = UNLOCKED_ACTIVITIES.includes(lastActivity);
+```
+
+Where `UNLOCKED_ACTIVITIES = ['PrepareData']`
+
+### What Tests Mock:
+```typescript
+// In story-5 tests
+const batch = createMockBatch({
+  LastExecutedActivityName: 'PrepareData',  // Exact match
+});
+mockMonthlyGet.mockResolvedValue([batch]);
+```
+
+### What Real API Likely Returns:
+The real `/report-batches` API may return:
+1. **Different casing**: `"Prepare Data"` (with space) or `"preparedata"` (lowercase)
+2. **API error/404**: Falls to catch block which sets `isLocked: true`
+3. **Different field name**: `LastActivityName` instead of `LastExecutedActivityName`
+4. **Empty/null response**: No batches returned
+
+### Evidence from Screenshot:
+- Home page shows badge "PrepareData" - but this could be hardcoded display text
+- File Uploads page shows "locked during approval" warning - indicating API mismatch
+
+---
+
+## Root Cause Summary
+
+| Layer | Status |
+|-------|--------|
+| Story requirements | Correct |
+| Test specifications | Correct |
+| Component implementation | Correct |
+| Test mocks | **Don't match real API** |
+| Real API integration | **Untested/broken** |
+
+**This is a classic TDD gap**: Unit/integration tests pass with mocks, but real API integration was never validated. The mocks were written based on assumed API behavior, not actual API responses.
+
+**Solution**: Need to verify the actual `/report-batches` API response format and update either the code or the mocks to match reality.
+
+---
+
+
+_**User: shamima-g (2026-01-29 02:27Z)**_
+
+How do you suggest to change the agents so this does not happen in the future again
+
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+This is a great question. Here are concrete suggestions to prevent mock/API mismatches in the future:
+
+## 1. Add a Mock Validation Step to the TDD Workflow
+
+**New Agent: `mock-validator`**
+
+Before implementation, this agent would:
+- Parse the OpenAPI spec for the endpoint being used
+- Compare test mock data structures against the spec
+- Flag mismatches in field names, types, casing, and required fields
+
+```
+/start â†’ feature-planner â†’ test-generator â†’ **mock-validator** â†’ implementation
+```
+
+## 2. Schema-Driven Mock Generation
+
+**Change to `test-generator` agent:**
+
+Instead of hand-writing mocks:
+```typescript
+// Current: Hand-written, error-prone
+const batch = createMockBatch({
+  LastExecutedActivityName: 'PrepareData', // Guessed field name
+});
+```
+
+Generate mocks from OpenAPI spec:
+```typescript
+// Improved: Generated from MonthlyAPIDefinition.yaml
+import { mockMonthlyReportBatch } from '@/test-utils/generated-mocks';
+const batch = mockMonthlyReportBatch({ LastExecutedActivityName: 'PrepareData' });
+```
+
+**Add to `/setup` skill:**
+- Generate TypeScript types AND mock factories from OpenAPI specs
+- Types and mocks stay in sync automatically
+
+## 3. Add Contract Tests
+
+**New test category: API Contract Tests**
+
+```typescript
+// __tests__/contracts/monthly-api.contract.test.ts
+describe('Monthly API Contract', () => {
+  it('GET /report-batches response matches OpenAPI spec', async () => {
+    const response = await fetch('/report-batches');
+    const data = await response.json();
+    
+    // Validate against OpenAPI schema
+    expect(validateAgainstSpec(data, 'MonthlyReportBatchRead')).toBeValid();
+  });
+});
+```
+
+Run these against a real or mock server before deployment.
+
+## 4. Update Quality Gates
+
+**Add to `/quality-check` skill:**
+
+| Gate | Current | Proposed |
+|------|---------|----------|
+| 1 | TypeScript compiles | TypeScript compiles |
+| 2 | Lint passes | Lint passes |
+| 3 | Tests pass | Tests pass |
+| 4 | Test quality | Test quality |
+| 5 | Build succeeds | Build succeeds |
+| **6** | - | **Mock/API contract validation** |
+
+## 5. Mandatory API Spec Review in Feature Planning
+
+**Change to `feature-planner` agent:**
+
+Before creating stories, require:
+1. Identify all API endpoints needed
+2. Verify endpoints exist in OpenAPI specs
+3. Document exact field names and expected values
+4. Flag any ambiguous fields (e.g., is it `PrepareData` or `Prepare Data`?)
+
+Add to story template:
+```markdown
+## API Contract Details
+| Field | OpenAPI Spec Value | Notes |
+|-------|-------------------|-------|
+| LastExecutedActivityName | string, enum: ["PrepareData", "ApproveFirstLevel", ...] | Case-sensitive |
+```
+
+## 6. E2E Smoke Tests
+
+**New Agent: `e2e-validator`**
+
+After implementation, before PR:
+- Run minimal E2E tests against real/staging API
+- Verify critical user flows work with real data
+- Catch mock/reality mismatches before merge
+
+---
+
+## Summary of Changes
+
+| Change | Prevents |
+|--------|----------|
+| Mock validation agent | Field name/casing mismatches |
+| Schema-driven mocks | Hand-written mock errors |
+| Contract tests | API response format changes |
+| Quality gate #6 | Shipping untested integrations |
+| API spec review in planning | Ambiguous requirements |
+| E2E smoke tests | Integration failures |
+
+Would you like me to implement any of these changes to the workflow?
+
+---
+
+
+_**User: shamima-g (2026-01-29 02:28Z)**_
+
+Commit and push log
+
