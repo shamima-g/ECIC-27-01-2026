@@ -160,9 +160,17 @@ export default function PortfolioImportsPage() {
     } else {
       // Fetch file details from API when we don't have them locally
       try {
+        const { month: reportMonth, year: reportYear } = getReportMonthYear(
+          currentBatch?.ReportDate,
+        );
         const response = await fileImporterGet<{ FileDetails: FileDetails }>(
-          '/file-details',
-          { FileLogId: file.FileLogId, FileType: file.FileType },
+          '/portfolio-file',
+          {
+            ReportMonth: reportMonth,
+            ReportYear: reportYear,
+            PortfolioId: portfolio.PortfolioId,
+            FileTypeId: file.FileTypeId,
+          },
         );
         if (response?.FileDetails) {
           setFileDetails(response.FileDetails);
