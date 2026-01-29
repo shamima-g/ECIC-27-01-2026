@@ -23,7 +23,18 @@ vi.mock('@/lib/api/client', () => ({
   del: vi.fn(),
   fileImporterGet: vi.fn(),
   fileImporterPost: vi.fn(),
+  fileImporterUpload: vi.fn(),
   fileImporterDel: vi.fn(),
+}));
+
+// Mock next-auth session
+vi.mock('@/lib/auth/auth-client', () => ({
+  useSession: vi.fn(() => ({
+    data: {
+      user: { name: 'Test User', email: 'test@example.com' },
+    },
+    status: 'authenticated',
+  })),
 }));
 
 import { fileImporterGet } from '@/lib/api/client';
@@ -222,8 +233,8 @@ describe('Epic 2, Story 1: Portfolio Imports Dashboard - Matrix View', () => {
         expect(screen.getByText('Coronation Fund')).toBeInTheDocument();
       });
 
-      // Find cells with failed status
-      const failedIcon = screen.getByLabelText(/failed|validation failed/i);
+      // Find cells with failed/error status
+      const failedIcon = screen.getByLabelText(/error in file|failed/i);
       expect(failedIcon).toBeInTheDocument();
     });
 

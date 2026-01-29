@@ -152,7 +152,13 @@ function buildHeaders(
     hasBody || (method && methodsWithBody.includes(method.toUpperCase()));
 
   if (shouldSetContentType && !baseHeaders['Content-Type']) {
-    baseHeaders['Content-Type'] = 'application/json';
+    // Don't set Content-Type for FormData - browser must set it automatically
+    // with the correct multipart boundary
+    const isFormData =
+      typeof FormData !== 'undefined' && body instanceof FormData;
+    if (!isFormData) {
+      baseHeaders['Content-Type'] = 'application/json';
+    }
   }
 
   // Add custom headers (e.g., LastChangedUser for audit trails)
@@ -602,6 +608,36 @@ export async function fileImporterPost<T>(
     method: 'POST',
     body:
       body instanceof FormData ? body : body ? JSON.stringify(body) : undefined,
+    params: config?.params,
+    lastChangedUser: config?.lastChangedUser,
+    baseUrl: FILE_IMPORTER_API_BASE_URL,
+  });
+}
+
+/**
+ * Configuration for File Importer binary upload requests
+ */
+interface FileImporterUploadConfig {
+  params?: Record<string, string | number | boolean | undefined>;
+  lastChangedUser?: string;
+}
+
+/**
+ * Convenience method for File Importer API binary file uploads
+ * Sends raw binary data with application/octet-stream content type
+ * as required by the /file/upload endpoint per OpenAPI spec
+ */
+export async function fileImporterUpload<T>(
+  endpoint: string,
+  file: File | Blob,
+  config?: FileImporterUploadConfig,
+): Promise<T> {
+  return apiClient<T>(endpoint, {
+    method: 'POST',
+    body: file,
+    headers: {
+      'Content-Type': 'application/octet-stream',
+    },
     params: config?.params,
     lastChangedUser: config?.lastChangedUser,
     baseUrl: FILE_IMPORTER_API_BASE_URL,

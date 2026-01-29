@@ -278,8 +278,9 @@ export default function PortfolioImportsPage() {
                 </TableCell>
                 {FILE_TYPE_COLUMNS.map((fileType) => {
                   const file = getFileForType(portfolio, fileType);
+                  // Use API status value directly, fallback to ⏱️ (not uploaded) for missing files
                   const statusColor = (file?.StatusColor ||
-                    'Gray') as FileStatusColor;
+                    '⏱️') as FileStatusColor;
 
                   return (
                     <TableCell key={fileType} className="text-center">
@@ -296,7 +297,7 @@ export default function PortfolioImportsPage() {
                             FileType: fileType,
                             FileName: '',
                             FileNamePattern: '',
-                            StatusColor: 'Gray',
+                            StatusColor: '⏱️',
                             Message: 'File not uploaded',
                             Action: '',
                             WorkflowInstanceId: '',

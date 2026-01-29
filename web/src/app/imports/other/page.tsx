@@ -116,8 +116,11 @@ export default function OtherImportsPage() {
   }, [accessLoading, fetchFiles]);
 
   // Polling for busy files
+  // Handle both emoji (⏳) and legacy (Yellow) status values
   useEffect(() => {
-    const hasBusyFiles = files.some((f) => f.StatusColor === 'Yellow');
+    const hasBusyFiles = files.some(
+      (f) => f.StatusColor === '⏳' || f.StatusColor === 'Yellow',
+    );
 
     if (!hasBusyFiles) return;
 
@@ -133,7 +136,10 @@ export default function OtherImportsPage() {
 
   const handleStatusClick = (file: OtherFile) => {
     setSelectedFile(file);
-    if (file.StatusColor !== 'Gray') {
+    // Handle both emoji (⏱️) and legacy (Gray) status values for "not uploaded"
+    const isNotUploaded =
+      file.StatusColor === '⏱️' || file.StatusColor === 'Gray';
+    if (!isNotUploaded) {
       setFileDetails({
         FileLogId: file.FileLogId,
         FileSettingId: file.FileSettingId,

@@ -23,19 +23,32 @@ vi.mock('@/lib/api/client', () => ({
   del: vi.fn(),
   fileImporterGet: vi.fn(),
   fileImporterPost: vi.fn(),
+  fileImporterUpload: vi.fn(),
   fileImporterDel: vi.fn(),
+}));
+
+// Mock next-auth session
+vi.mock('@/lib/auth/auth-client', () => ({
+  useSession: vi.fn(() => ({
+    data: {
+      user: { name: 'Test User', email: 'test@example.com' },
+    },
+    status: 'authenticated',
+  })),
 }));
 
 import {
   fileImporterGet,
-  fileImporterPost,
+  fileImporterUpload,
   fileImporterDel,
 } from '@/lib/api/client';
 // This import WILL FAIL until implemented - that's the point of TDD!
 import FileUploadModal from '@/components/file-import/FileUploadModal';
 
 const mockFileImporterGet = fileImporterGet as ReturnType<typeof vitest.fn>;
-const mockFileImporterPost = fileImporterPost as ReturnType<typeof vitest.fn>;
+const mockFileImporterUpload = fileImporterUpload as ReturnType<
+  typeof vitest.fn
+>;
 const mockFileImporterDel = fileImporterDel as ReturnType<typeof vitest.fn>;
 
 // Type definitions based on FileImporterAPIDefinition.yaml
@@ -214,7 +227,9 @@ describe('Epic 2, Story 3: File Upload Modal', () => {
 
     it('uploads file and shows progress bar', async () => {
       const user = userEvent.setup();
-      mockFileImporterPost.mockResolvedValue({ message: 'Upload successful' });
+      mockFileImporterUpload.mockResolvedValue({
+        message: 'Upload successful',
+      });
 
       render(
         <FileUploadModal
@@ -251,7 +266,7 @@ describe('Epic 2, Story 3: File Upload Modal', () => {
 
     it('displays success message after upload completes', async () => {
       const user = userEvent.setup();
-      mockFileImporterPost.mockResolvedValue({
+      mockFileImporterUpload.mockResolvedValue({
         message: 'File uploaded successfully, validation in progress',
       });
 
@@ -290,7 +305,9 @@ describe('Epic 2, Story 3: File Upload Modal', () => {
 
     it('calls upload API with correct parameters', async () => {
       const user = userEvent.setup();
-      mockFileImporterPost.mockResolvedValue({ message: 'Upload successful' });
+      mockFileImporterUpload.mockResolvedValue({
+        message: 'Upload successful',
+      });
 
       render(
         <FileUploadModal
@@ -321,17 +338,21 @@ describe('Epic 2, Story 3: File Upload Modal', () => {
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(mockFileImporterPost).toHaveBeenCalledWith(
-          expect.stringContaining('/file/upload'),
-          expect.any(FormData),
+        expect(mockFileImporterUpload).toHaveBeenCalledWith(
+          '/file/upload',
+          expect.any(File),
           expect.objectContaining({
             params: expect.objectContaining({
               FileSettingId: 5,
               ReportBatchId: 123,
               FileName: 'holdings.csv',
+              User: expect.any(String),
             }),
           }),
         );
+        // FilelogId should NOT be present for new uploads (missing files)
+        const callParams = mockFileImporterUpload.mock.calls[0][2].params;
+        expect(callParams.FilelogId).toBeUndefined();
       });
     });
   });
@@ -474,7 +495,7 @@ describe('Epic 2, Story 3: File Upload Modal', () => {
   describe('Error Handling', () => {
     it('displays error message when upload fails', async () => {
       const user = userEvent.setup();
-      mockFileImporterPost.mockRejectedValue(new Error('Upload failed'));
+      mockFileImporterUpload.mockRejectedValue(new Error('Upload failed'));
 
       render(
         <FileUploadModal

@@ -27,9 +27,10 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import {
   fileImporterGet,
-  fileImporterPost,
+  fileImporterUpload,
   fileImporterDel,
 } from '@/lib/api/client';
+import { useSession } from '@/lib/auth/auth-client';
 import type { FileDetails } from '@/types/file-import';
 import FileValidationErrors from './FileValidationErrors';
 
@@ -62,6 +63,7 @@ export function FileUploadModal({
   readOnly = false,
   onSuccess,
 }: FileUploadModalProps) {
+  const { data: session } = useSession();
   const [showFileInput, setShowFileInput] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -73,14 +75,26 @@ export function FileUploadModal({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Use fileDetails status if available (fetched from API), otherwise use prop
-  // Normalize status color to handle case variations from API
+  // Handle both emoji-based status values and legacy color names
   const rawStatusColor = fileDetails?.StatusColor || statusColor;
-  const effectiveStatusColor = rawStatusColor?.toLowerCase() || 'gray';
-  const isBusy = effectiveStatusColor === 'yellow';
-  const isFailed = effectiveStatusColor === 'red';
-  const isComplete = effectiveStatusColor === 'green';
-  // isMissing is the default fallback when no other status matches (handles unknown/invalid status values)
-  const isMissing = !isComplete && !isFailed && !isBusy;
+
+  // Map status to boolean flags for UI rendering
+  // Emoji values: ✅ (complete), ⏱️ (not uploaded), ⚠️ (error), ⏳ (busy), ‼️ (action required)
+  // Legacy values: Green, Gray, Red, Yellow
+  const isComplete =
+    rawStatusColor === '✅' || rawStatusColor?.toLowerCase() === 'green';
+  const isBusy =
+    rawStatusColor === '⏳' || rawStatusColor?.toLowerCase() === 'yellow';
+  const isFailed =
+    rawStatusColor === '⚠️' ||
+    rawStatusColor === '‼️' ||
+    rawStatusColor?.toLowerCase() === 'red';
+  const isActionRequired = rawStatusColor === '‼️';
+  // isMissing is the default fallback when no other status matches
+  const isMissing =
+    rawStatusColor === '⏱️' ||
+    rawStatusColor?.toLowerCase() === 'gray' ||
+    (!isComplete && !isFailed && !isBusy);
 
   const handleUploadClick = () => {
     setShowFileInput(true);
@@ -112,15 +126,25 @@ export function FileUploadModal({
     }, 100);
 
     try {
-      const formData = new FormData();
-      formData.append('file', selectedFile);
+      // Use binary upload with application/octet-stream per OpenAPI spec
+      // Only include FilelogId for re-uploads (when it exists), not for new uploads
+      const uploadParams: Record<
+        string,
+        string | number | boolean | undefined
+      > = {
+        FileSettingId: fileSettingId,
+        FileName: selectedFile.name,
+        User: session?.user?.name || session?.user?.email || 'Unknown',
+        ReportBatchId: reportBatchId,
+      };
 
-      await fileImporterPost('/file/upload', formData, {
-        params: {
-          FileSettingId: fileSettingId,
-          ReportBatchId: reportBatchId,
-          FileName: selectedFile.name,
-        },
+      // Only include FilelogId if it exists (for re-uploads)
+      if (fileLogId) {
+        uploadParams.FilelogId = fileLogId;
+      }
+
+      await fileImporterUpload('/file/upload', selectedFile, {
+        params: uploadParams,
       });
 
       clearInterval(progressInterval);
@@ -433,7 +457,7 @@ export function FileUploadModal({
               fileLogId={fileDetails.FileLogId}
               fileSettingId={fileDetails.FileSettingId || fileSettingId}
               fileFormatId={fileDetails.FileFormatId || fileFormatId}
-              statusColor={effectiveStatusColor}
+              statusColor={rawStatusColor}
               hasErrors={true}
               disabled={readOnly}
               onRetrySuccess={onSuccess}
