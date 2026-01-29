@@ -91,7 +91,7 @@ describe('Epic 2, Story 5: File Access Restrictions', () => {
       const batch = createMockBatch({
         LastExecutedActivityName: 'PrepareData',
       });
-      mockMonthlyGet.mockResolvedValue([batch]);
+      mockMonthlyGet.mockResolvedValue({ MonthlyReportBatches: [batch] });
       mockFileImporterGet.mockResolvedValue(createMockPortfoliosResponse());
 
       render(<PortfolioImportsPage />);
@@ -110,7 +110,7 @@ describe('Epic 2, Story 5: File Access Restrictions', () => {
       const batch = createMockBatch({
         LastExecutedActivityName: 'PrepareData',
       });
-      mockMonthlyGet.mockResolvedValue([batch]);
+      mockMonthlyGet.mockResolvedValue({ MonthlyReportBatches: [batch] });
       mockFileImporterGet.mockResolvedValue(createMockOtherFilesResponse());
 
       render(<OtherImportsPage />);
@@ -129,7 +129,7 @@ describe('Epic 2, Story 5: File Access Restrictions', () => {
       const batch = createMockBatch({
         LastExecutedActivityName: 'PrepareData',
       });
-      mockMonthlyGet.mockResolvedValue([batch]);
+      mockMonthlyGet.mockResolvedValue({ MonthlyReportBatches: [batch] });
       mockFileImporterGet.mockResolvedValue(createMockPortfoliosResponse());
 
       render(<PortfolioImportsPage />);
@@ -159,7 +159,7 @@ describe('Epic 2, Story 5: File Access Restrictions', () => {
           const batch = createMockBatch({
             LastExecutedActivityName: activityName,
           });
-          mockMonthlyGet.mockResolvedValue([batch]);
+          mockMonthlyGet.mockResolvedValue({ MonthlyReportBatches: [batch] });
           mockFileImporterGet.mockResolvedValue(createMockPortfoliosResponse());
 
           render(<PortfolioImportsPage />);
@@ -175,7 +175,7 @@ describe('Epic 2, Story 5: File Access Restrictions', () => {
           const batch = createMockBatch({
             LastExecutedActivityName: activityName,
           });
-          mockMonthlyGet.mockResolvedValue([batch]);
+          mockMonthlyGet.mockResolvedValue({ MonthlyReportBatches: [batch] });
           mockFileImporterGet.mockResolvedValue(createMockOtherFilesResponse());
 
           render(<OtherImportsPage />);
@@ -194,7 +194,7 @@ describe('Epic 2, Story 5: File Access Restrictions', () => {
           const batch = createMockBatch({
             LastExecutedActivityName: activityName,
           });
-          mockMonthlyGet.mockResolvedValue([batch]);
+          mockMonthlyGet.mockResolvedValue({ MonthlyReportBatches: [batch] });
           mockFileImporterGet.mockResolvedValue(createMockPortfoliosResponse());
 
           render(<PortfolioImportsPage />);
@@ -235,7 +235,7 @@ describe('Epic 2, Story 5: File Access Restrictions', () => {
       const batch = createMockBatch({
         LastExecutedActivityName: 'PrepareData',
       });
-      mockMonthlyGet.mockResolvedValue([batch]);
+      mockMonthlyGet.mockResolvedValue({ MonthlyReportBatches: [batch] });
       mockFileImporterGet.mockResolvedValue(createMockPortfoliosResponse());
 
       render(<PortfolioImportsPage />);
@@ -259,7 +259,7 @@ describe('Epic 2, Story 5: File Access Restrictions', () => {
         LastExecutedActivityName: 'PrepareData',
         WorkflowStatusName: 'Data Preparation', // Returned from approval
       });
-      mockMonthlyGet.mockResolvedValue([batch]);
+      mockMonthlyGet.mockResolvedValue({ MonthlyReportBatches: [batch] });
       mockFileImporterGet.mockResolvedValue(createMockPortfoliosResponse());
 
       render(<PortfolioImportsPage />);
@@ -281,7 +281,7 @@ describe('Epic 2, Story 5: File Access Restrictions', () => {
       const batch = createMockBatch({
         LastExecutedActivityName: 'ApproveFirstLevel',
       });
-      mockMonthlyGet.mockResolvedValue([batch]);
+      mockMonthlyGet.mockResolvedValue({ MonthlyReportBatches: [batch] });
 
       const fileDetails = {
         FileLogId: 1,
@@ -335,7 +335,7 @@ describe('Epic 2, Story 5: File Access Restrictions', () => {
       const batch = createMockBatch({
         LastExecutedActivityName: 'ApproveSecondLevel',
       });
-      mockMonthlyGet.mockResolvedValue([batch]);
+      mockMonthlyGet.mockResolvedValue({ MonthlyReportBatches: [batch] });
 
       const fileDetails = {
         FileLogId: 1,
@@ -385,7 +385,7 @@ describe('Epic 2, Story 5: File Access Restrictions', () => {
       const batch = createMockBatch({
         LastExecutedActivityName: 'PrepareData',
       });
-      mockMonthlyGet.mockResolvedValue([batch]);
+      mockMonthlyGet.mockResolvedValue({ MonthlyReportBatches: [batch] });
       mockFileImporterGet.mockResolvedValue(createMockPortfoliosResponse());
 
       render(<PortfolioImportsPage />);
@@ -403,7 +403,7 @@ describe('Epic 2, Story 5: File Access Restrictions', () => {
       const batch = createMockBatch({
         LastExecutedActivityName: 'ApproveFirstLevel',
       });
-      mockMonthlyGet.mockResolvedValue([batch]);
+      mockMonthlyGet.mockResolvedValue({ MonthlyReportBatches: [batch] });
       mockFileImporterGet.mockResolvedValue(createMockPortfoliosResponse());
 
       render(<PortfolioImportsPage />);
@@ -438,7 +438,7 @@ describe('Epic 2, Story 5: File Access Restrictions', () => {
       const batch = createMockBatch({
         LastExecutedActivityName: 'UnknownActivity',
       });
-      mockMonthlyGet.mockResolvedValue([batch]);
+      mockMonthlyGet.mockResolvedValue({ MonthlyReportBatches: [batch] });
       mockFileImporterGet.mockResolvedValue(createMockPortfoliosResponse());
 
       render(<PortfolioImportsPage />);
@@ -455,7 +455,7 @@ describe('Epic 2, Story 5: File Access Restrictions', () => {
       const batch = createMockBatch({
         LastExecutedActivityName: 'ApproveFirstLevel',
       });
-      mockMonthlyGet.mockResolvedValue([batch]);
+      mockMonthlyGet.mockResolvedValue({ MonthlyReportBatches: [batch] });
       mockFileImporterGet.mockResolvedValue(createMockPortfoliosResponse());
 
       const { container } = render(<PortfolioImportsPage />);
@@ -474,7 +474,7 @@ describe('Epic 2, Story 5: File Access Restrictions', () => {
       const batch = createMockBatch({
         LastExecutedActivityName: 'PrepareData',
       });
-      mockMonthlyGet.mockResolvedValue([batch]);
+      mockMonthlyGet.mockResolvedValue({ MonthlyReportBatches: [batch] });
       mockFileImporterGet.mockResolvedValue(createMockPortfoliosResponse());
 
       const { container } = render(<PortfolioImportsPage />);
@@ -491,7 +491,7 @@ describe('Epic 2, Story 5: File Access Restrictions', () => {
       const batch = createMockBatch({
         LastExecutedActivityName: 'ApproveFirstLevel',
       });
-      mockMonthlyGet.mockResolvedValue([batch]);
+      mockMonthlyGet.mockResolvedValue({ MonthlyReportBatches: [batch] });
       mockFileImporterGet.mockResolvedValue(createMockPortfoliosResponse());
 
       render(<PortfolioImportsPage />);

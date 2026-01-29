@@ -10,7 +10,10 @@
 
 import { useState, useEffect } from 'react';
 import * as apiClient from '@/lib/api/client';
-import type { MonthlyReportBatch } from '@/types/report-batch';
+import type {
+  MonthlyReportBatch,
+  MonthlyReportBatchesResponse,
+} from '@/types/report-batch';
 
 interface WorkflowAccessState {
   isLocked: boolean;
@@ -75,8 +78,10 @@ export function useWorkflowAccessControl(): WorkflowAccessState {
         }
 
         // Fetch all report batches and find the current (most recent unfinished) one
-        const batches =
-          await monthlyGetFn<MonthlyReportBatch[]>('/report-batches');
+        // API returns { MonthlyReportBatches: [...] } per OpenAPI spec
+        const response =
+          await monthlyGetFn<MonthlyReportBatchesResponse>('/report-batches');
+        const batches = response?.MonthlyReportBatches || [];
 
         if (cancelled) return;
 
