@@ -96,8 +96,20 @@ export function useWorkflowAccessControl(): WorkflowAccessState {
         }
 
         const lastActivity = currentBatch?.LastExecutedActivityName || '';
-        const isUnlocked = UNLOCKED_ACTIVITIES.includes(lastActivity);
-        const isLocked = !isUnlocked;
+
+        // Determine lock state based on activity
+        // - If in UNLOCKED_ACTIVITIES (e.g., PrepareData) → unlocked
+        // - If in LOCKED_ACTIVITIES (e.g., ApproveFirstLevel) → locked
+        // - If empty/null activity (new batch, not yet started) → unlocked (allow data prep)
+        // - If unknown activity → locked for safety
+        const isInUnlockedActivity = UNLOCKED_ACTIVITIES.includes(lastActivity);
+        const isInLockedActivity = LOCKED_ACTIVITIES.includes(lastActivity);
+        const isEmptyActivity = !lastActivity || lastActivity.trim() === '';
+
+        // Unlocked if: in an unlocked activity OR new batch with no activity yet
+        // Locked if: in a locked activity OR unknown activity (for safety)
+        const isLocked =
+          isInLockedActivity || (!isInUnlockedActivity && !isEmptyActivity);
 
         setState({
           isLocked,
@@ -132,13 +144,22 @@ export function useWorkflowAccessControl(): WorkflowAccessState {
 
 /**
  * Check if a specific activity is in a locked phase
+ *
+ * Logic:
+ * - If in UNLOCKED_ACTIVITIES (e.g., PrepareData) → not locked
+ * - If in LOCKED_ACTIVITIES (e.g., ApproveFirstLevel) → locked
+ * - If empty/null activity (new batch) → not locked (allow data prep)
+ * - If unknown activity → locked for safety
  */
 export function isActivityLocked(
   activityName: string | null | undefined,
 ): boolean {
-  if (!activityName) return true; // Default to locked if unknown
+  // Empty/null activity (new batch, not yet started) → not locked
+  if (!activityName || activityName.trim() === '') return false;
+
   if (UNLOCKED_ACTIVITIES.includes(activityName)) return false;
   if (LOCKED_ACTIVITIES.includes(activityName)) return true;
+
   // Unknown activity - default to locked for safety
   return true;
 }

@@ -207,10 +207,56 @@ export function FileUploadModal({
         </DialogHeader>
 
         <div className="space-y-4">
-          {/* Status indicator for busy files */}
+          {/* File Status Display - Prominent status indicator */}
+          <div className="border-b pb-3">
+            <div className="flex items-center gap-2">
+              <span className="font-medium">File Status:</span>
+              {isComplete && (
+                <span className="text-green-600 font-medium flex items-center gap-1">
+                  Complete
+                  <svg
+                    className="w-4 h-4"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </span>
+              )}
+              {isFailed && (
+                <span className="text-red-600 font-medium flex items-center gap-1">
+                  Failed
+                  <svg
+                    className="w-4 h-4"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </span>
+              )}
+              {isBusy && (
+                <span className="text-yellow-600 font-medium">
+                  Processing...
+                </span>
+              )}
+              {isMissing && (
+                <span className="text-gray-500 font-medium">Not Uploaded</span>
+              )}
+            </div>
+          </div>
+
+          {/* Progress indicator for busy files */}
           {isBusy && (
             <div className="space-y-2">
-              <p className="text-yellow-700">Processing...</p>
               <Progress value={50} role="progressbar" />
             </div>
           )}
@@ -232,21 +278,44 @@ export function FileUploadModal({
             </div>
           )}
 
-          {/* File details for complete/failed files */}
+          {/* File details section for complete/failed files */}
           {fileDetails && (isComplete || isFailed) && (
-            <div className="space-y-2 text-sm">
-              <p>
-                <span className="font-medium">File:</span>{' '}
-                {fileDetails.FileName}
-              </p>
-              <p>
-                <span className="font-medium">Pattern:</span>{' '}
-                {fileDetails.FileNamePattern}
-              </p>
-              <p>
-                <span className="font-medium">Upload Date:</span>{' '}
-                {formatDate(fileDetails.StartDate)}
-              </p>
+            <div className="border rounded p-3 bg-gray-50 space-y-2 text-sm">
+              <h4 className="font-medium text-gray-900 border-b pb-1 mb-2">
+                File Details
+              </h4>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <span className="font-medium text-gray-600">Filename:</span>
+                </div>
+                <div>{fileDetails.FileName || '-'}</div>
+
+                <div>
+                  <span className="font-medium text-gray-600">Pattern:</span>
+                </div>
+                <div>{fileDetails.FileNamePattern || '-'}</div>
+
+                <div>
+                  <span className="font-medium text-gray-600">
+                    Upload Date:
+                  </span>
+                </div>
+                <div>{formatDate(fileDetails.StartDate)}</div>
+
+                <div>
+                  <span className="font-medium text-gray-600">Validation:</span>
+                </div>
+                <div>
+                  {isComplete && <span className="text-green-600">Passed</span>}
+                  {isFailed && <span className="text-red-600">Failed</span>}
+                </div>
+              </div>
+              {fileDetails.Message && (
+                <div className="mt-2 pt-2 border-t">
+                  <span className="font-medium text-gray-600">Message:</span>{' '}
+                  <span className="text-gray-700">{fileDetails.Message}</span>
+                </div>
+              )}
             </div>
           )}
 
