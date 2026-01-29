@@ -599,3 +599,285 @@ _**User: shamima-g (2026-01-29 10:12Z)**_
 
 Commit and push changes
 
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Bash_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Bash_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Bash_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Bash_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Bash_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Bash_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Bash_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+Done. Committed and pushed.
+
+**Commit:** `29868a9` - Fix: Use correct /portfolio-file endpoint per OpenAPI spec
+
+**Changes:**
+- [portfolio/page.tsx](web/src/app/imports/portfolio/page.tsx) - Replaced non-existent `/file-details` endpoint with documented `/portfolio-file` endpoint using correct parameters
+
+---
+
+
+_**User: shamima-g (2026-01-29 10:13Z)**_
+
+Why this error? Don't do anything, check this endpoint in the OpenAPI specification. Just investigate.
+
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+I'll investigate the `/file/upload` endpoint in the OpenAPI specification.
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Grep_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+Now let me check the frontend implementation to see how it's sending the upload request.
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Grep_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Grep_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+## Investigation Results
+
+### The Error: `415 Unsupported Media Type`
+
+Looking at the OpenAPI spec vs the frontend implementation:
+
+### OpenAPI Spec (`/file/upload` POST):
+
+**Required Query Parameters:**
+| Parameter | Required | Frontend Sends |
+|-----------|----------|----------------|
+| `FileSettingId` | âœ“ | âœ“ Present |
+| `FilelogId` | âœ“ | âœ— **MISSING** |
+| `FileName` | âœ“ | âœ“ Present |
+| `User` | âœ“ | âœ— **MISSING** |
+| `ReportBatchId` | âœ“ | âœ“ Present |
+
+**Request Body:**
+```yaml
+requestBody:
+  content:
+    application/octet-stream:   # <-- Expects raw binary stream
+      schema:
+        type: string
+        format: binary
+```
+
+### Frontend Implementation ([FileUploadModal.tsx:115-124](web/src/components/file-import/FileUploadModal.tsx#L115-L124)):
+
+```typescript
+const formData = new FormData();
+formData.append('file', selectedFile);
+
+await fileImporterPost('/file/upload', formData, {
+  params: {
+    FileSettingId: fileSettingId,
+    ReportBatchId: reportBatchId,
+    FileName: selectedFile.name,
+    // Missing: FilelogId
+    // Missing: User
+  },
+});
+```
+
+### Root Cause
+
+**The `415 Unsupported Media Type` error** occurs because:
+
+1. **Wrong Content-Type**: The frontend sends `FormData` which uses `multipart/form-data`, but the API expects `application/octet-stream` (raw binary data)
+
+2. **Missing parameters**: `FilelogId` and `User` are required by the spec but not sent
+
+This is another implementation mistake from Epic 2 where the frontend doesn't match the OpenAPI specification.
+
+---
+
+
+_**User: shamima-g (2026-01-29 10:16Z)**_
+
+How do you suggest to change the agents / or update the claude.md so this does not happen in the future again.
+
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+Great question. Here are my recommendations to prevent OpenAPI/implementation mismatches:
+
+## 1. Update CLAUDE.md - Add API Contract Rules
+
+Add this section to CLAUDE.md:
+
+```markdown
+### 6. API Contract Compliance
+
+**Before writing ANY API call:**
+1. Read the exact endpoint definition in the OpenAPI spec (`documentation/*.yaml`)
+2. Verify ALL required parameters (query, path, body)
+3. Verify the correct Content-Type (e.g., `application/octet-stream` vs `multipart/form-data`)
+4. Verify the response schema matches what you're expecting
+
+**Checklist for each API integration:**
+- [ ] Endpoint path matches spec exactly
+- [ ] All required query parameters included
+- [ ] All required body fields included
+- [ ] Content-Type header matches spec's `requestBody.content` key
+- [ ] Response type matches spec's response schema
+
+**Never invent endpoints.** If the spec doesn't have what you need, flag it to the user rather than assuming an endpoint exists.
+```
+
+## 2. Generate TypeScript Types from OpenAPI
+
+Add a build step to auto-generate types:
+
+```bash
+# Add to package.json scripts
+"generate:api-types": "openapi-typescript documentation/*.yaml -o src/types/generated/"
+```
+
+This creates compile-time errors when API calls don't match the spec.
+
+## 3. Add a Validation Agent/Quality Gate
+
+Create a new agent or quality gate that:
+
+```markdown
+## api-contract-checker agent
+
+Validates that all API calls in the codebase match the OpenAPI specifications:
+1. Extracts all API calls from source code (grep for `get(`, `post(`, etc.)
+2. Cross-references each call against the OpenAPI spec
+3. Reports mismatches in: endpoints, parameters, Content-Type, response types
+```
+
+## 4. Update TDD Workflow
+
+In the SPECIFY phase, add:
+
+```markdown
+### API Integration Tests Must Include:
+- Mock responses that match the EXACT OpenAPI response schema
+- Verification that the correct endpoint path is called
+- Verification that ALL required parameters are passed
+- Verification of Content-Type for file uploads
+```
+
+## 5. Add Pre-Commit Validation
+
+A script that:
+1. Parses all `fileImporterGet`, `fileImporterPost`, etc. calls
+2. Validates them against the OpenAPI YAML
+3. Fails the commit if mismatches are found
+
+---
+
+**Which of these would you like me to implement?** I'd recommend starting with #1 (CLAUDE.md update) and #2 (TypeScript generation) as they provide the most immediate value with least effort.
+
+---
+
+
+_**User: shamima-g (2026-01-29 10:17Z)**_
+
+Commit and push changes
+
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Bash_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+I haven't made any code changes yet - I only provided recommendations in my previous response. 
+
+Would you like me to:
+
+1. **Update CLAUDE.md** with the API Contract Compliance rules I suggested?
+2. **Just commit the session log** as-is?
+
+Which would you prefer?
+
+---
+
+
+_**User: shamima-g (2026-01-29 10:17Z)**_
+
+yes, commit session log
+
