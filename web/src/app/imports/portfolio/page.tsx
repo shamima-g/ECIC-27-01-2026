@@ -256,68 +256,66 @@ export default function PortfolioImportsPage() {
       )}
 
       {/* Portfolio Files Matrix */}
-      <div className="overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="sticky left-0 bg-white z-10 min-w-[200px]">
-                Portfolio
+      <Table className="min-w-max">
+        <TableHeader>
+          <TableRow>
+            <TableHead className="sticky left-0 bg-white z-10 min-w-[200px]">
+              Portfolio
+            </TableHead>
+            {FILE_TYPE_COLUMNS.map((fileType) => (
+              <TableHead key={fileType} className="text-center">
+                {fileType}
               </TableHead>
-              {FILE_TYPE_COLUMNS.map((fileType) => (
-                <TableHead key={fileType} className="text-center">
-                  {fileType}
-                </TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody role="presentation">
-            {portfolios.map((portfolio) => (
-              <TableRow key={portfolio.PortfolioId}>
-                <TableCell className="sticky left-0 bg-white font-medium">
-                  {portfolio.PortfolioName}
-                </TableCell>
-                {FILE_TYPE_COLUMNS.map((fileType) => {
-                  const file = getFileForType(portfolio, fileType);
-                  // Use API status value directly, fallback to ⏱️ (not uploaded) for missing files
-                  const statusColor = (file?.StatusColor ||
-                    '⏱️') as FileStatusColor;
-
-                  return (
-                    <TableCell key={fileType} className="text-center">
-                      <StatusIcon
-                        statusColor={statusColor}
-                        fileType={fileType}
-                        onClick={() => {
-                          const fileObj: PortfolioFile = file || {
-                            FileLogId: 0,
-                            FileSettingId: 0,
-                            FileFormatId: 0,
-                            FileTypeId: 0,
-                            ReportBatchId: currentBatch?.ReportBatchId || 0,
-                            FileType: fileType,
-                            FileName: '',
-                            FileNamePattern: '',
-                            StatusColor: '⏱️',
-                            Message: 'File not uploaded',
-                            Action: '',
-                            WorkflowInstanceId: '',
-                            WorkflowStatusId: 0,
-                            StartDate: '',
-                            EndDate: '',
-                            InvalidReasons: '',
-                          };
-                          handleStatusClick(portfolio, fileObj);
-                        }}
-                        readOnly={isLocked}
-                      />
-                    </TableCell>
-                  );
-                })}
-              </TableRow>
             ))}
-          </TableBody>
-        </Table>
-      </div>
+          </TableRow>
+        </TableHeader>
+        <TableBody role="presentation">
+          {portfolios.map((portfolio) => (
+            <TableRow key={portfolio.PortfolioId}>
+              <TableCell className="sticky left-0 bg-white font-medium">
+                {portfolio.PortfolioName}
+              </TableCell>
+              {FILE_TYPE_COLUMNS.map((fileType) => {
+                const file = getFileForType(portfolio, fileType);
+                // Use API status value directly, fallback to ⏱️ (not uploaded) for missing files
+                const statusColor = (file?.StatusColor ||
+                  '⏱️') as FileStatusColor;
+
+                return (
+                  <TableCell key={fileType} className="text-center">
+                    <StatusIcon
+                      statusColor={statusColor}
+                      fileType={fileType}
+                      onClick={() => {
+                        const fileObj: PortfolioFile = file || {
+                          FileLogId: 0,
+                          FileSettingId: 0,
+                          FileFormatId: 0,
+                          FileTypeId: 0,
+                          ReportBatchId: currentBatch?.ReportBatchId || 0,
+                          FileType: fileType,
+                          FileName: '',
+                          FileNamePattern: '',
+                          StatusColor: '⏱️',
+                          Message: 'File not uploaded',
+                          Action: '',
+                          WorkflowInstanceId: '',
+                          WorkflowStatusId: 0,
+                          StartDate: '',
+                          EndDate: '',
+                          InvalidReasons: '',
+                        };
+                        handleStatusClick(portfolio, fileObj);
+                      }}
+                      readOnly={isLocked}
+                    />
+                  </TableCell>
+                );
+              })}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
 
       {/* File Upload Modal */}
       {selectedFile && (
