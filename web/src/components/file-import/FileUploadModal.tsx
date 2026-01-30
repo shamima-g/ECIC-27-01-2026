@@ -178,6 +178,8 @@ export function FileUploadModal({
 
       await fileImporterDel('/file', {
         FileLogId: fileDetails?.FileLogId || fileLogId,
+        FileSettingId: fileDetails?.FileSettingId || fileSettingId,
+        ReportBatchId: reportBatchId,
       });
 
       setShowConfirmCancel(false);

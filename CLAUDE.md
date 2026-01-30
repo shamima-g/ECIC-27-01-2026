@@ -96,6 +96,15 @@ export const createUser = (data: CreateUserRequest) => post<User>('/v1/users', d
 - Query parameters and request bodies
 - Error response shapes
 
+**CRITICAL: Before implementing ANY API call, you MUST:**
+1. Open the relevant OpenAPI spec file
+2. Find the exact endpoint definition
+3. List ALL required parameters (check `required: true`)
+4. Ensure your implementation includes EVERY required parameter
+5. Never assume a single ID parameter is sufficient - verify against the spec
+
+This prevents 400 Bad Request errors from missing required parameters.
+
 ### 3. No Error Suppressions
 
 **Never use suppression directives:**
