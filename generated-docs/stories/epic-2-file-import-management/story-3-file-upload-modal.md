@@ -30,7 +30,6 @@
 
 ### View File Details
 - [x] Given a file is complete, when I view the modal, then I see FileName, FileNamePattern, upload date/time, and record count
-- [x] Given I click "Export File", when the action completes, then the original uploaded file is downloaded to my computer
 
 ## API Endpoints (from OpenAPI spec)
 
@@ -40,7 +39,6 @@
 | GET | `/other-file?ReportMonth={month}&ReportYear={year}&FileType={type}&FileSource={source}&FileFormat={format}` | Get other file details |
 | POST | `/file/upload?FileSettingId={id}&FilelogId={id}&FileName={name}&User={user}&ReportBatchId={id}` | Upload a file (binary body) |
 | DELETE | `/file?FileLogId={id}&FileSettingId={id}&ReportBatchId={id}` | Cancel a file |
-| GET | `/file?FilePath={path}` | Export/download uploaded file |
 
 ## Upload API Details
 

@@ -14,7 +14,12 @@
 - [ ] Given a file failed, when I click on its row, then I see detailed error information
 - [ ] Given I want to view logs for a different batch, when I select a batch from the dropdown, then logs for that batch display
 
+### Export File
+- [ ] Given I click "Export File" on a file row, when the action completes, then the original uploaded file is downloaded to my computer
+- [ ] Given the file has a valid FilePath, when I export, then the file downloads with its original filename
+
 ## API Endpoints
 | Method | Endpoint | Purpose |
 |--------|----------|---------|
 | GET | `/process-logs?ReportBatchId={id}` | Get file process logs |
+| GET | `/file?FilePath={path}` | Export/download uploaded file |

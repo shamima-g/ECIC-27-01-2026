@@ -8,7 +8,6 @@
  * - Cancel/remove uploaded files with confirmation
  * - View file details (name, pattern, date, etc.)
  * - Re-upload files
- * - Export/download uploaded files
  * - View validation errors (for failed files)
  */
 
@@ -25,11 +24,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import {
-  fileImporterGet,
-  fileImporterUpload,
-  fileImporterDel,
-} from '@/lib/api/client';
+import { fileImporterUpload, fileImporterDel } from '@/lib/api/client';
 import { useSession } from '@/lib/auth/auth-client';
 import type { FileDetails } from '@/types/file-import';
 import FileValidationErrors from './FileValidationErrors';
@@ -186,34 +181,6 @@ export function FileUploadModal({
       setError(err instanceof Error ? err.message : 'Cancel failed');
     } finally {
       setIsDeleting(false);
-    }
-  };
-
-  const handleExportFile = async () => {
-    try {
-      setError(null);
-
-      // Use FilePath if available, otherwise fall back to FileName
-      const filePath = fileDetails?.FilePath || fileDetails?.FileName || '';
-      if (!filePath) {
-        setError('No file path available for export');
-        return;
-      }
-
-      const blob = await fileImporterGet<Blob>('/file', {
-        FilePath: filePath,
-      });
-
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = fileDetails?.FileName || 'file';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Export failed');
     }
   };
 
@@ -445,13 +412,6 @@ export function FileUploadModal({
               {isBusy && !readOnly && (
                 <Button variant="destructive" onClick={handleCancelFileClick}>
                   Cancel File
-                </Button>
-              )}
-
-              {/* Complete file - show Export button */}
-              {(isComplete || isFailed) && fileDetails && (
-                <Button variant="outline" onClick={handleExportFile}>
-                  Export File
                 </Button>
               )}
             </div>

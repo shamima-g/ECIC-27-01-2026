@@ -21,7 +21,6 @@ vi.mock('@/lib/api/client', () => ({
   post: vi.fn(),
   put: vi.fn(),
   del: vi.fn(),
-  fileImporterGet: vi.fn(),
   fileImporterPost: vi.fn(),
   fileImporterUpload: vi.fn(),
   fileImporterDel: vi.fn(),
@@ -37,15 +36,10 @@ vi.mock('@/lib/auth/auth-client', () => ({
   })),
 }));
 
-import {
-  fileImporterGet,
-  fileImporterUpload,
-  fileImporterDel,
-} from '@/lib/api/client';
+import { fileImporterUpload, fileImporterDel } from '@/lib/api/client';
 // This import WILL FAIL until implemented - that's the point of TDD!
 import FileUploadModal from '@/components/file-import/FileUploadModal';
 
-const mockFileImporterGet = fileImporterGet as ReturnType<typeof vitest.fn>;
 const mockFileImporterUpload = fileImporterUpload as ReturnType<
   typeof vitest.fn
 >;
@@ -125,7 +119,6 @@ describe('Epic 2, Story 3: File Upload Modal', () => {
   describe('Modal Display - Complete File', () => {
     it('displays file details with "Cancel File", "Re-upload", and file info for complete files', () => {
       const fileDetails = createMockFileDetails({ StatusColor: 'Green' });
-      mockFileImporterGet.mockResolvedValue({ FileDetails: fileDetails });
 
       render(
         <FileUploadModal
@@ -156,7 +149,6 @@ describe('Epic 2, Story 3: File Upload Modal', () => {
         Message: 'Validation failed',
         InvalidReasons: 'Format error',
       });
-      mockFileImporterGet.mockResolvedValue({ FileDetails: fileDetails });
 
       render(
         <FileUploadModal
@@ -181,7 +173,6 @@ describe('Epic 2, Story 3: File Upload Modal', () => {
         StatusColor: 'Yellow',
         Message: 'Processing',
       });
-      mockFileImporterGet.mockResolvedValue({ FileDetails: fileDetails });
 
       render(
         <FileUploadModal
@@ -456,39 +447,6 @@ describe('Epic 2, Story 3: File Upload Modal', () => {
         screen.getByText(/CORONATION_Holdings_\*\.csv/),
       ).toBeInTheDocument();
       expect(screen.getByText(/march|mar.*2024/i)).toBeInTheDocument();
-    });
-
-    it('allows exporting/downloading the uploaded file', async () => {
-      const user = userEvent.setup();
-      const fileDetails = createMockFileDetails({
-        FileName: '202403_CORONATION_Holdings.csv',
-      });
-      mockFileImporterGet.mockResolvedValue(new Blob(['file content']));
-
-      render(
-        <FileUploadModal
-          isOpen={true}
-          onClose={() => {}}
-          fileType="Holdings"
-          portfolioName="Coronation Fund"
-          statusColor="Green"
-          fileDetails={fileDetails}
-        />,
-      );
-
-      const exportButton = screen.getByRole('button', {
-        name: /export file|download/i,
-      });
-      await user.click(exportButton);
-
-      await waitFor(() => {
-        expect(mockFileImporterGet).toHaveBeenCalledWith(
-          expect.stringContaining('/file'),
-          expect.objectContaining({
-            FilePath: expect.any(String),
-          }),
-        );
-      });
     });
   });
 
