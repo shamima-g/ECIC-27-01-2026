@@ -28,6 +28,10 @@ import { fileImporterUpload, fileImporterDel } from '@/lib/api/client';
 import { useSession } from '@/lib/auth/auth-client';
 import type { FileDetails } from '@/types/file-import';
 import FileValidationErrors from './FileValidationErrors';
+import {
+  validateFilenamePattern,
+  getPatternDescription,
+} from '@/lib/constants/file-settings-map';
 
 interface FileUploadModalProps {
   isOpen: boolean;
@@ -40,6 +44,7 @@ interface FileUploadModalProps {
   reportBatchId?: number;
   fileLogId?: number;
   fileFormatId?: number;
+  fileNamePattern?: string;
   readOnly?: boolean;
   onSuccess?: () => void;
 }
@@ -55,6 +60,7 @@ export function FileUploadModal({
   reportBatchId,
   fileLogId,
   fileFormatId,
+  fileNamePattern,
   readOnly = false,
   onSuccess,
 }: FileUploadModalProps) {
@@ -67,7 +73,12 @@ export function FileUploadModal({
   const [showConfirmCancel, setShowConfirmCancel] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [filenameWarning, setFilenameWarning] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Get the effective filename pattern - prefer fileDetails, fallback to prop
+  const effectivePattern =
+    fileDetails?.FileNamePattern || fileNamePattern || '';
 
   // Use fileDetails status if available (fetched from API), otherwise use prop
   // Handle both emoji-based status values and legacy color names
@@ -95,12 +106,25 @@ export function FileUploadModal({
     setShowFileInput(true);
     setError(null);
     setSuccessMessage(null);
+    setFilenameWarning(null);
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setSelectedFile(file);
+      setFilenameWarning(null);
+
+      // Validate filename against expected pattern
+      if (
+        effectivePattern &&
+        !validateFilenamePattern(file.name, effectivePattern)
+      ) {
+        const patternDesc = getPatternDescription(effectivePattern);
+        setFilenameWarning(
+          `Please upload a file with a valid filename. The filename must include ${patternDesc}.`,
+        );
+      }
     }
   };
 
@@ -367,10 +391,23 @@ export function FileUploadModal({
                 </p>
               )}
 
+              {/* Filename validation warning */}
+              {filenameWarning && (
+                <div className="rounded-md bg-yellow-50 border border-yellow-200 p-3">
+                  <p className="text-sm font-medium text-yellow-800">Warning</p>
+                  <p className="text-sm text-yellow-700">{filenameWarning}</p>
+                  {effectivePattern && (
+                    <p className="text-sm text-yellow-600 mt-1">
+                      Expected pattern: {effectivePattern}
+                    </p>
+                  )}
+                </div>
+              )}
+
               <div className="flex gap-2">
                 <Button
                   onClick={handleUploadSubmit}
-                  disabled={!selectedFile || isUploading}
+                  disabled={!selectedFile || isUploading || !!filenameWarning}
                 >
                   {isUploading ? 'Uploading...' : 'Upload'}
                 </Button>
@@ -379,6 +416,7 @@ export function FileUploadModal({
                   onClick={() => {
                     setShowFileInput(false);
                     setSelectedFile(null);
+                    setFilenameWarning(null);
                   }}
                   disabled={isUploading}
                 >

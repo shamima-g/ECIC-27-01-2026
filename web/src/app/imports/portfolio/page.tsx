@@ -22,6 +22,7 @@ import {
 import { StatusIcon } from '@/components/file-import/StatusIcon';
 import { FileUploadModal } from '@/components/file-import/FileUploadModal';
 import { useWorkflowAccessControl } from '@/hooks/useWorkflowAccessControl';
+import { getPortfolioFileSetting } from '@/lib/constants/file-settings-map';
 import type {
   Portfolio,
   PortfolioFile,
@@ -287,15 +288,20 @@ export default function PortfolioImportsPage() {
                       statusColor={statusColor}
                       fileType={fileType}
                       onClick={() => {
+                        // Look up FileSettingId and pattern for cells that have never had a file uploaded
+                        const fileSetting = getPortfolioFileSetting(
+                          portfolio.PortfolioName,
+                          fileType,
+                        );
                         const fileObj: PortfolioFile = file || {
                           FileLogId: 0,
-                          FileSettingId: 0,
+                          FileSettingId: fileSetting?.id ?? 0,
                           FileFormatId: 0,
                           FileTypeId: 0,
                           ReportBatchId: currentBatch?.ReportBatchId || 0,
                           FileType: fileType,
                           FileName: '',
-                          FileNamePattern: '',
+                          FileNamePattern: fileSetting?.pattern ?? '',
                           StatusColor: '⏱️',
                           Message: 'File not uploaded',
                           Action: '',
@@ -330,6 +336,7 @@ export default function PortfolioImportsPage() {
           reportBatchId={selectedFile.file.ReportBatchId}
           fileLogId={selectedFile.file.FileLogId}
           fileFormatId={selectedFile.file.FileFormatId}
+          fileNamePattern={selectedFile.file.FileNamePattern}
           readOnly={isLocked}
           onSuccess={handleUploadSuccess}
         />

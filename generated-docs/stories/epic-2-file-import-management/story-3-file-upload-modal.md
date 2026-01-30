@@ -24,6 +24,15 @@
 - [x] Given the upload starts, when I view the modal, then I see a progress bar showing upload percentage
 - [x] Given the upload completes, when validation starts, then I see a message "File uploaded successfully, validation in progress"
 
+### FileSettingId Lookup (for cells with no prior uploads)
+- [x] Given a cell has never had a file uploaded (FileSettingId=0 from API), when the modal opens, then the correct FileSettingId is looked up from a local mapping based on portfolio name and file type
+- [x] Given the FileSettingId is looked up successfully, when I upload a file, then the correct FileSettingId is sent to the API
+
+### Client-Side Filename Validation
+- [x] Given I select a file, when the filename does not match the expected pattern (e.g., `*Income*.csv`), then I see a warning message explaining the required filename format
+- [x] Given the filename validation fails, when I view the warning, then I see the expected pattern (e.g., "Expected pattern: *Income*.csv")
+- [x] Given the filename validation fails, when I try to upload, then the Upload button is disabled until I select a valid file
+
 ### Cancel File
 - [x] Given I click "Cancel File", when I confirm the action, then the file is canceled and removed from the staging area
 - [x] Given the file is canceled, when the modal closes, then the status icon updates to "Not Uploaded" (⏱️)
@@ -58,8 +67,10 @@ Uses `fileImporterUpload()` from `lib/api/client.ts` for binary uploads.
 - Use Shadcn `<Dialog>` component for the modal
 - Use Shadcn `<Button>` with variants (default, destructive, outline)
 - Use `fileImporterUpload()` for binary file uploads with `application/octet-stream`
-- FilelogId is only sent for re-uploads (when file already exists)
+- FilelogId is sent as `0` for new uploads, existing ID for re-uploads
 - User name retrieved from session via `useSession()` hook
 - Use Shadcn `<Progress>` component for upload progress bar
 - Show confirmation dialog before canceling a file
 - Status detection handles both emoji (✅, ⏱️, ⚠️, ⏳, ‼️) and legacy (Green, Gray, Red, Yellow) values
+- `lib/constants/file-settings-map.ts` contains FileSettingId and filename pattern mappings for each portfolio/file type combination
+- Client-side filename validation uses pattern matching (e.g., `*Income*.csv` checks for "income" keyword and ".csv" extension)
