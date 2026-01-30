@@ -136,12 +136,9 @@ export function FileUploadModal({
         FileName: selectedFile.name,
         User: session?.user?.name || session?.user?.email || 'Unknown',
         ReportBatchId: reportBatchId,
+        // FilelogId is required per OpenAPI spec - use 0 for new uploads, existing ID for re-uploads
+        FilelogId: fileLogId || 0,
       };
-
-      // Only include FilelogId if it exists (for re-uploads)
-      if (fileLogId) {
-        uploadParams.FilelogId = fileLogId;
-      }
 
       await fileImporterUpload('/file/upload', selectedFile, {
         params: uploadParams,

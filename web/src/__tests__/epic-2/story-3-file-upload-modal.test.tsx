@@ -350,9 +350,9 @@ describe('Epic 2, Story 3: File Upload Modal', () => {
             }),
           }),
         );
-        // FilelogId should NOT be present for new uploads (missing files)
+        // FilelogId should be 0 for new uploads (per OpenAPI spec - required parameter)
         const callParams = mockFileImporterUpload.mock.calls[0][2].params;
-        expect(callParams.FilelogId).toBeUndefined();
+        expect(callParams.FilelogId).toBe(0);
       });
     });
   });
