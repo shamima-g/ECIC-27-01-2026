@@ -13,24 +13,24 @@
 ## Acceptance Criteria
 
 ### Modal Display
-- [ ] Given I click a status icon on Portfolio Imports or Other Imports, when the modal opens, then I see the file type, portfolio (if applicable), current status, and available actions
-- [ ] Given the file is missing, when I view the modal, then I see an "Upload File" button
-- [ ] Given the file is complete or failed, when I view the modal, then I see "Cancel File", "Re-upload", and "View Errors" (if failed) buttons
-- [ ] Given the file is busy, when I view the modal, then I see "Cancel File" button and a progress indicator
+- [x] Given I click a status icon on Portfolio Imports or Other Imports, when the modal opens, then I see the file type, portfolio (if applicable), current status, and available actions
+- [x] Given the file is missing (StatusColor=⏱️), when I view the modal, then I see an "Upload File" button
+- [x] Given the file is complete (StatusColor=✅) or has errors (StatusColor=⚠️/‼️), when I view the modal, then I see "Cancel File", "Re-upload", and "View Errors" (if failed) buttons
+- [x] Given the file is busy (StatusColor=⏳), when I view the modal, then I see "Cancel File" button and a progress indicator
 
 ### Upload File
-- [ ] Given I click "Upload File", when the file input appears, then I can browse and select a file from my computer
-- [ ] Given I select a file, when I click "Upload", then the file is uploaded to the system and validation begins
-- [ ] Given the upload starts, when I view the modal, then I see a progress bar showing upload percentage
-- [ ] Given the upload completes, when validation starts, then I see a message "File uploaded successfully, validation in progress"
+- [x] Given I click "Upload File", when the file input appears, then I can browse and select a file from my computer
+- [x] Given I select a file, when I click "Upload", then the file is uploaded as binary (application/octet-stream) per OpenAPI spec
+- [x] Given the upload starts, when I view the modal, then I see a progress bar showing upload percentage
+- [x] Given the upload completes, when validation starts, then I see a message "File uploaded successfully, validation in progress"
 
 ### Cancel File
-- [ ] Given I click "Cancel File", when I confirm the action, then the file is canceled and removed from the staging area
-- [ ] Given the file is canceled, when the modal closes, then the status icon updates to "Missing"
+- [x] Given I click "Cancel File", when I confirm the action, then the file is canceled and removed from the staging area
+- [x] Given the file is canceled, when the modal closes, then the status icon updates to "Not Uploaded" (⏱️)
 
 ### View File Details
-- [ ] Given a file is complete, when I view the modal, then I see FileName, FileNamePattern, upload date/time, and record count
-- [ ] Given I click "Export File", when the action completes, then the original uploaded file is downloaded to my computer
+- [x] Given a file is complete, when I view the modal, then I see FileName, FileNamePattern, upload date/time, and record count
+- [x] Given I click "Export File", when the action completes, then the original uploaded file is downloaded to my computer
 
 ## API Endpoints (from OpenAPI spec)
 
@@ -38,13 +38,30 @@
 |--------|----------|---------|
 | GET | `/portfolio-file?ReportMonth={month}&ReportYear={year}&PortfolioId={id}&FileTypeId={id}` | Get portfolio file details |
 | GET | `/other-file?ReportMonth={month}&ReportYear={year}&FileType={type}&FileSource={source}&FileFormat={format}` | Get other file details |
-| POST | `/file/upload?FileSettingId={id}&FilelogId={id}&FileName={name}&User={user}&ReportBatchId={id}` | Upload a file |
+| POST | `/file/upload?FileSettingId={id}&FilelogId={id}&FileName={name}&User={user}&ReportBatchId={id}` | Upload a file (binary body) |
 | DELETE | `/file?FileLogId={id}&FileSettingId={id}&ReportBatchId={id}` | Cancel a file |
 | GET | `/file?FilePath={path}` | Export/download uploaded file |
+
+## Upload API Details
+
+The `/file/upload` endpoint requires:
+- **Content-Type:** `application/octet-stream` (raw binary)
+- **Body:** Raw file data (not FormData)
+- **Query Parameters:**
+  - `FileSettingId` (required): File setting identifier
+  - `FilelogId` (optional): Only for re-uploads, omit for new uploads
+  - `FileName` (required): Name of the file being uploaded
+  - `User` (required): Username from session
+  - `ReportBatchId` (required): Current batch ID
+
+Uses `fileImporterUpload()` from `lib/api/client.ts` for binary uploads.
 
 ## Implementation Notes
 - Use Shadcn `<Dialog>` component for the modal
 - Use Shadcn `<Button>` with variants (default, destructive, outline)
-- Implement file upload with progress tracking (use browser File API)
+- Use `fileImporterUpload()` for binary file uploads with `application/octet-stream`
+- FilelogId is only sent for re-uploads (when file already exists)
+- User name retrieved from session via `useSession()` hook
 - Use Shadcn `<Progress>` component for upload progress bar
 - Show confirmation dialog before canceling a file
+- Status detection handles both emoji (✅, ⏱️, ⚠️, ⏳, ‼️) and legacy (Green, Gray, Red, Yellow) values
