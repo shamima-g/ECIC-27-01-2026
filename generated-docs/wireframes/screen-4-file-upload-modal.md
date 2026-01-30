@@ -28,9 +28,9 @@ Popup modal for viewing file status, uploading/replacing files, viewing errors, 
 |    │  ─────────────────────────────────────────────────────────     │       |
 |    │                                                                 │       |
 |    │  Actions                                                        │       |
-|    │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐         │       |
-|    │  │ Upload/Replace│  │ Cancel File  │  │ Export File  │         │       |
-|    │  └──────────────┘  └──────────────┘  └──────────────┘         │       |
+|    │  ┌──────────────┐  ┌──────────────┐                           │       |
+|    │  │ Upload/Replace│  │ Cancel File  │                           │       |
+|    │  └──────────────┘  └──────────────┘                           │       |
 |    │                                                                 │       |
 |    │  ┌──────────────┐  ┌──────────────┐                           │       |
 |    │  │ Retry Valid. │  │ View Errors  │                           │       |
@@ -110,7 +110,6 @@ Popup modal for viewing file status, uploading/replacing files, viewing errors, 
 | File Details | Display Panel | Shows filename, upload date, user, size, rows processed |
 | Upload/Replace | Button | Opens file upload area to upload or replace file |
 | Cancel File | Button | Cancels the file upload |
-| Export File | Button | Exports the uploaded file data |
 | Retry Validation | Button | Re-runs validation on the file |
 | View Errors | Button | Shows validation error details (switches view) |
 | Drag & Drop Area | File Input | Area to drag/drop or browse for files |
@@ -120,6 +119,8 @@ Popup modal for viewing file status, uploading/replacing files, viewing errors, 
 | Upload | Button | Confirms and uploads selected file |
 | Close | Button | Closes the modal |
 
+**Note:** Export File functionality (download uploaded file data) is available in Epic 8 - Process Logs.
+
 ## User Actions
 
 - **View Status**: See detailed file upload and validation status
@@ -128,7 +129,6 @@ Popup modal for viewing file status, uploading/replacing files, viewing errors, 
 - **Retry Validation**: Re-run validation after corrections
 - **View Errors**: See detailed list of validation errors
 - **Export Errors**: Download error list for offline correction
-- **Export File**: Download the uploaded file data
 
 ## Navigation
 

@@ -47,6 +47,7 @@ export default function HomePage() {
   const [expandedBatchId, setExpandedBatchId] = useState<number | null>(null);
   const [approvalLogs, setApprovalLogs] = useState<ApproveLog[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [fileUploadsSubmenuOpen, setFileUploadsSubmenuOpen] = useState(false);
   const [maintenanceSubmenuOpen, setMaintenanceSubmenuOpen] = useState(false);
   const [approvalsSubmenuOpen, setApprovalsSubmenuOpen] = useState(false);
   const [adminSubmenuOpen, setAdminSubmenuOpen] = useState(false);
@@ -212,12 +213,35 @@ export default function HomePage() {
       {/* Navigation Menu */}
       <nav className="mb-8" aria-label="Main navigation">
         <div className="flex flex-wrap gap-4 items-center">
-          <Link
-            href="/imports/portfolio"
-            className="text-primary hover:underline font-medium"
-          >
-            File Uploads
-          </Link>
+          <div className="relative">
+            <button
+              type="button"
+              className="text-primary hover:underline font-medium"
+              onClick={() => setFileUploadsSubmenuOpen(!fileUploadsSubmenuOpen)}
+              aria-expanded={fileUploadsSubmenuOpen}
+              aria-haspopup="true"
+            >
+              File Uploads
+            </button>
+            {fileUploadsSubmenuOpen && (
+              <div className="absolute top-full left-0 mt-1 bg-white border rounded shadow-lg z-10 min-w-[180px]">
+                <Link
+                  href="/imports/portfolio"
+                  className="block px-4 py-2 hover:bg-gray-100"
+                  onClick={() => setFileUploadsSubmenuOpen(false)}
+                >
+                  Portfolio Imports
+                </Link>
+                <Link
+                  href="/imports/other"
+                  className="block px-4 py-2 hover:bg-gray-100"
+                  onClick={() => setFileUploadsSubmenuOpen(false)}
+                >
+                  Other Imports
+                </Link>
+              </div>
+            )}
+          </div>
           <Link
             href="/data-confirmation"
             className="text-primary hover:underline font-medium"

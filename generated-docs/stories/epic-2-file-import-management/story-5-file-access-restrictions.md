@@ -30,7 +30,9 @@
 
 ### Read-Only Access During Approval
 - [ ] Given file uploads are locked, when I click a status icon, then I can still view file details and errors (read-only mode)
-- [ ] Given file uploads are locked, when I view the file modal, then I can view and export files but NOT upload or cancel
+- [ ] Given file uploads are locked, when I view the file modal, then I can view file details but NOT upload or cancel
+
+**Note:** Export File functionality is available in Epic 8 (Process Logs).
 
 ## API Endpoints (from OpenAPI spec)
 

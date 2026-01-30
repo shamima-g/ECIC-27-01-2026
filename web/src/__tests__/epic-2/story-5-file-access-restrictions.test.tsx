@@ -334,10 +334,7 @@ describe('Epic 2, Story 5: File Access Restrictions', () => {
           screen.queryByRole('button', { name: /cancel file/i }),
         ).not.toBeInTheDocument();
 
-        // Should still allow export
-        expect(
-          screen.getByRole('button', { name: /export|download/i }),
-        ).toBeInTheDocument();
+        // Note: Export File feature moved to Epic 8 (Process Logs)
       }
     });
 
