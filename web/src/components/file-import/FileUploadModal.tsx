@@ -193,8 +193,15 @@ export function FileUploadModal({
     try {
       setError(null);
 
+      // Use FilePath if available, otherwise fall back to FileName
+      const filePath = fileDetails?.FilePath || fileDetails?.FileName || '';
+      if (!filePath) {
+        setError('No file path available for export');
+        return;
+      }
+
       const blob = await fileImporterGet<Blob>('/file', {
-        FilePath: fileDetails?.FileName || '',
+        FilePath: filePath,
       });
 
       const url = URL.createObjectURL(blob);

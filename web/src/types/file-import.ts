@@ -11,6 +11,7 @@ export interface PortfolioFile {
   ReportBatchId: number;
   FileType: string;
   FileName: string;
+  FilePath?: string;
   FileNamePattern: string;
   StatusColor: string; // Emoji-based status from API: ✅, ⏱️, ⚠️, ⏳, ‼️
   Message: string;
@@ -42,6 +43,7 @@ export interface OtherFile {
   FileType: string;
   ReportBatchId: number;
   FileName: string;
+  FilePath?: string;
   FileNamePattern: string;
   StatusColor: string; // Emoji-based status from API: ✅, ⏱️, ⚠️, ⏳, ‼️
   Message: string;
@@ -65,6 +67,7 @@ export interface FileDetails {
   ReportBatchId: number;
   FileType: string;
   FileName: string;
+  FilePath?: string;
   FileNamePattern: string;
   StatusColor: string;
   Message: string;
