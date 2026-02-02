@@ -15,7 +15,7 @@ Transforms feature specifications into structured implementation plans through c
 DESIGN (once) → PLAN (all stories) → [REALIGN → SPECIFY → IMPLEMENT → REVIEW → VERIFY] per epic
 ```
 
-The feature-planner runs in **two modes**:
+The feature-planner runs in **three modes**:
 
 ### Mode 1: PLAN (once at start)
 1. Define ALL epics (user approves)
@@ -31,6 +31,26 @@ The feature-planner runs in **two modes**:
 3. If no impacts: complete automatically
 4. Clear processed impacts from the log
 5. Hand off to test-generator for the epic
+
+### Mode 3: MODIFY (on-demand)
+Use this mode when the user requests changes to existing stories (add, remove, or edit).
+
+1. **Identify the change type:** Remove story, edit story, or add story
+2. **Read the target story file** to understand its scope and dependencies
+3. **Scan for related artifacts** - this is CRITICAL to avoid incomplete changes:
+   - Read the story's "Related Artifacts" section (if present)
+   - Search wireframes that the story references
+   - Search wireframes for functionality keywords from the story
+   - Check epic overview for story references
+   - Check other stories that may depend on or reference this story
+4. **Present full impact list** for user approval before making changes
+5. **Apply changes:**
+   - For removal: delete story file, update epic overview, update/remove wireframe references, renumber subsequent stories
+   - For edit: update story file, update related wireframes if scope changed
+   - For add: create story file, update epic overview, link to wireframes
+6. **Commit changes** with descriptive message
+
+**Key principle:** Never present an incomplete impact list. When in doubt, scan more files rather than fewer.
 
 ## Workflow
 
@@ -304,10 +324,18 @@ List ALL endpoints this story requires. **NEVER invent endpoints - only use thos
 If the story requires an endpoint not in the spec, flag it:
 - ⚠️ **Missing endpoint:** `POST /v1/something` - need to add to API spec or clarify with user
 
+## Related Artifacts
+
+- **Wireframes:** [List all wireframe files this story references or affects, e.g., `../../wireframes/screen-1-login.md`]
+- **Depends on:** [List stories that must be completed before this one, or "None"]
+- **Impacts:** [List other stories or wireframes that would need updates if this story changes, or "None"]
+
 ## Implementation Notes
 - [Any technical considerations, components needed]
 - [Reference specific wireframe elements if applicable, e.g., "See Login wireframe for form layout"]
 ```
+
+**IMPORTANT:** The "Related Artifacts" section enables MODIFY mode to find all affected files when a story is changed or removed. Always populate this section accurately.
 
 **After completing each story:** Save to `generated-docs/stories/epic-N-[slug]/story-N-[slug].md`
 
@@ -669,6 +697,111 @@ Proceed to test-generator for Epic [N].
 
 ---
 
+## MODIFY Mode (On-Demand)
+
+When invoked in MODIFY mode (user requests to add, remove, or edit stories), follow these steps:
+
+### Step M1: Identify the Change
+
+Clarify with the user:
+- **Change type:** Remove, edit, or add story?
+- **Target:** Which epic and story?
+- **Reason:** Why is this change needed? (helps identify cascading impacts)
+
+### Step M2: Read Target Story and Gather Context
+
+1. **Read the target story file** from `generated-docs/stories/epic-N-[slug]/story-N-[slug].md`
+2. **Check for Related Artifacts section** in the story - if present, this lists known dependencies
+3. **Read the epic overview** from `generated-docs/stories/epic-N-[slug]/_epic-overview.md`
+
+### Step M3: Scan for Related Artifacts (CRITICAL)
+
+**This step prevents incomplete changes.** Always scan thoroughly rather than assuming.
+
+1. **Wireframes referenced by the story:**
+   - Check the story's "Wireframe:" field
+   - Check the story's "Related Artifacts" section
+   - Read each referenced wireframe file
+
+2. **Wireframes that reference similar functionality:**
+   - Search wireframes for keywords from the story title and acceptance criteria
+   - Example: If removing "Navigation to Fix Screens", search wireframes for "navigate", "click-through", "fix screen"
+   ```bash
+   grep -r "navigate\|click-through\|fix screen" generated-docs/wireframes/
+   ```
+
+3. **Epic overview updates:**
+   - The `_epic-overview.md` file lists all stories - must be updated
+
+4. **Other stories with dependencies:**
+   - Check if other stories list this story in their "Depends on" field
+   - Check if other stories reference functionality from this story
+
+5. **Subsequent story renumbering:**
+   - If removing a story, all subsequent stories in that epic need renumbering
+
+### Step M4: Present Impact List for Approval
+
+Present a complete list of all files that will be affected:
+
+```markdown
+## Proposed Changes for [Change Type]: [Story Name]
+
+### Files to Delete
+- `generated-docs/stories/epic-N-[slug]/story-N-[slug].md`
+
+### Files to Update
+| File | Change Required |
+|------|-----------------|
+| `_epic-overview.md` | Remove story reference, update count |
+| `screen-X-[name].md` | Remove navigation/click-through references (lines X-Y) |
+| `screen-Y-[name].md` | Remove "View [Screen]" button references |
+| `story-N+1-[slug].md` | Rename to `story-N-[slug].md`, update "Story: N of Total" |
+
+### Summary
+- Files to delete: N
+- Files to update: N
+- Stories to renumber: N
+
+**Please review and approve before I apply these changes.**
+```
+
+**STOP and wait for user approval.**
+
+### Step M5: Apply Changes
+
+Once approved, apply changes in this order:
+
+1. **Delete files** (if removing a story)
+2. **Update wireframes** - remove references to removed functionality
+3. **Update epic overview** - remove story, update count
+4. **Renumber stories** - rename files and update internal references
+5. **Update other stories** - fix any "Depends on" references
+
+### Step M6: Commit Changes
+
+```bash
+git add generated-docs/ .claude/logs/
+git commit -m "MODIFY: [Remove/Edit/Add] [story name] from Epic [N]
+
+- [List key changes made]
+- [List files affected]"
+```
+
+### Example: Removing a Story
+
+**User:** "Remove story 4 from Epic 3"
+
+**Agent:**
+1. Reads `story-4-navigation-to-fix-screens.md`
+2. Finds wireframe reference: `screen-6-data-confirmation-other.md`
+3. Searches wireframes for "navigate", "click", "fix" → finds references in screen-5, screen-6, screen-7
+4. Presents impact list showing 1 file to delete, 4 files to update, 1 story to renumber
+5. After approval, applies all changes
+6. Commits with descriptive message
+
+---
+
 ## Rules
 
 1. **Always pause for approval** after epics and after each epic's story titles
@@ -678,12 +811,16 @@ Proceed to test-generator for Epic [N].
 5. **Acceptance criteria should be specific** - Given/When/Then format (human-readable, not code)
 6. **Ask, don't assume** - if something is unclear, ask
 7. **Always include `.claude/logs`** - Every commit must include `.claude/logs` for traceability.
+8. **Always populate Related Artifacts** - Every story must have the Related Artifacts section filled in accurately
+9. **MODIFY mode: scan thoroughly** - When modifying stories, always search for related artifacts rather than assuming; incomplete impact lists lead to inconsistent documentation
 
 ### What NOT to Do
 
 - Do NOT skip acceptance criteria - every story needs Given/When/Then criteria
 - Do NOT proceed without user approval at each stage
 - Do NOT hand off to test-generator until ALL epics have stories with acceptance criteria
+- Do NOT present an incomplete impact list in MODIFY mode - scan all potentially affected files
+- Do NOT skip the Related Artifacts section when creating stories
 
 ---
 
