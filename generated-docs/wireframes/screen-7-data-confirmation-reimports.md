@@ -74,4 +74,4 @@ Manages re-import status for portfolios, showing which portfolios have requested
 ## Navigation
 
 - **From:** Main File Checks Tab, Other Checks Tab
-- **To:** Main File Checks Tab (after re-import), Portfolio Imports Dashboard
+- **To:** Main File Checks Tab, Other Checks Tab

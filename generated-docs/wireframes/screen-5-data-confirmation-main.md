@@ -61,11 +61,11 @@ Verifies portfolio and custodian data completeness with status grid showing at-a
 |                                                                              |
 |  Legend:  ✓ Complete   ✗ Failed   ○ Missing                                 |
 |                                                                              |
-|  Overall Status: 2 issues found - Click on ✗ or ○ to navigate to fix screen |
+|  Overall Status: 2 issues found                                             |
 |                                                                              |
 +------------------------------------------------------------------------------+
 
-Note: Clicking on any ✗ or ○ status navigates to the appropriate file upload screen
+Note: Use the navigation menu to access file upload screens for resolving issues
 ```
 
 ## Elements
@@ -77,7 +77,7 @@ Note: Clicking on any ✗ or ○ status navigates to the appropriate file upload
 | Portfolio Re-imports Tab | Tab | Tab for re-import status |
 | Refresh Checks | Button | Updates check status in real-time |
 | Export Results | Button | Exports check results to Excel |
-| Status Indicators | Clickable Icon | Green ✓, Red ✗, or Gray ○; click navigates to fix |
+| Status Indicators | Icon | Green ✓, Red ✗, or Gray ○ showing data status |
 | Portfolio Manager Grid | Table | Shows PM data completeness by portfolio |
 | Custodian Grid | Table | Shows custodian data completeness by portfolio |
 | Bloomberg Grid | Table | Shows Bloomberg data completeness by portfolio |
@@ -86,7 +86,6 @@ Note: Clicking on any ✗ or ○ status navigates to the appropriate file upload
 ## User Actions
 
 - **View Status**: See comprehensive data completeness across all portfolios
-- **Click on Issue**: Navigate to file upload screen to resolve ✗ or ○ status
 - **Refresh Checks**: Update status after making corrections
 - **Export Results**: Export check results for external review
 - **Switch Tabs**: Navigate to Other Checks or Portfolio Re-imports
@@ -94,4 +93,4 @@ Note: Clicking on any ✗ or ○ status navigates to the appropriate file upload
 ## Navigation
 
 - **From:** Start Page, File Uploads
-- **To:** File Upload screens (click on issue), Other Checks Tab, Portfolio Re-imports Tab
+- **To:** Other Checks Tab, Portfolio Re-imports Tab

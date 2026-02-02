@@ -2,7 +2,7 @@
 
 ## Description
 
-This epic implements the Data Confirmation screen, which provides a consolidated view to verify that all required data is complete and valid before proceeding to approvals. The screen is organized into three tabs: Main File Checks (portfolio/custodian data), Other Checks (reference data), and Portfolio Re-imports. Users can click through incomplete items to navigate directly to the appropriate maintenance screens for fixes.
+This epic implements the Data Confirmation screen, which provides a consolidated view to verify that all required data is complete and valid before proceeding to approvals. The screen is organized into three tabs: Main File Checks (portfolio/custodian data), Other Checks (reference data), and Portfolio Re-imports. Users can view the status of data completeness and use the standard navigation menu to access maintenance screens for fixes.
 
 ## Stories
 
@@ -18,10 +18,6 @@ This epic implements the Data Confirmation screen, which provides a consolidated
    - File: `story-3-portfolio-reimports-tab.md`
    - Status: Pending
 
-4. **Data Confirmation - Navigation to Fix Screens** - Click-through to maintenance screens
-   - File: `story-4-navigation-to-fix-screens.md`
-   - Status: Pending
-
-5. **Data Confirmation - Real-time Refresh** - Auto-update check statuses
-   - File: `story-5-realtime-refresh.md`
+4. **Data Confirmation - Real-time Refresh** - Auto-update check statuses
+   - File: `story-4-realtime-refresh.md`
    - Status: Pending

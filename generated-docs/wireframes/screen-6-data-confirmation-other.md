@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Validates reference data completeness (instruments, prices, ratings, durations, betas) with summary counts and click-through to specific maintenance screens.
+Validates reference data completeness (instruments, prices, ratings, durations, betas) with summary counts showing data readiness before proceeding to approvals.
 
 ## Wireframe
 
@@ -28,7 +28,6 @@ Validates reference data completeness (instruments, prices, ratings, durations, 
 |  |  │                                                                │    |  |
 |  |  │  Incomplete Count: 3                                     ✗    │    |  |
 |  |  │                                                                │    |  |
-|  |  │  [View Index Prices Screen]                                   │    |  |
 |  |  └──────────────────────────────────────────────────────────────┘    |  |
 |  |                                                                        |  |
 |  |  ┌──────────────────────────────────────────────────────────────┐    |  |
@@ -37,7 +36,6 @@ Validates reference data completeness (instruments, prices, ratings, durations, 
 |  |  │                                                                │    |  |
 |  |  │  Incomplete Count: 0                                     ✓    │    |  |
 |  |  │                                                                │    |  |
-|  |  │  [View Instruments Screen]                                    │    |  |
 |  |  └──────────────────────────────────────────────────────────────┘    |  |
 |  |                                                                        |  |
 |  |  ┌──────────────────────────────────────────────────────────────┐    |  |
@@ -46,7 +44,6 @@ Validates reference data completeness (instruments, prices, ratings, durations, 
 |  |  │                                                                │    |  |
 |  |  │  Incomplete Count: 0                                     ✓    │    |  |
 |  |  │                                                                │    |  |
-|  |  │  [View Credit Ratings Screen]                                 │    |  |
 |  |  └──────────────────────────────────────────────────────────────┘    |  |
 |  |                                                                        |  |
 |  |  ┌──────────────────────────────────────────────────────────────┐    |  |
@@ -55,7 +52,6 @@ Validates reference data completeness (instruments, prices, ratings, durations, 
 |  |  │                                                                │    |  |
 |  |  │  Incomplete Count: 5                                     ✗    │    |  |
 |  |  │                                                                │    |  |
-|  |  │  [View Durations Screen]                                      │    |  |
 |  |  └──────────────────────────────────────────────────────────────┘    |  |
 |  |                                                                        |  |
 |  |  ┌──────────────────────────────────────────────────────────────┐    |  |
@@ -64,7 +60,6 @@ Validates reference data completeness (instruments, prices, ratings, durations, 
 |  |  │                                                                │    |  |
 |  |  │  Incomplete Count: 0                                     ✓    │    |  |
 |  |  │                                                                │    |  |
-|  |  │  [View Betas Screen]                                          │    |  |
 |  |  └──────────────────────────────────────────────────────────────┘    |  |
 |  |                                                                        |  |
 |  +------------------------------------------------------------------------+  |
@@ -86,13 +81,11 @@ Validates reference data completeness (instruments, prices, ratings, durations, 
 | Check Card | Display Panel | Shows status for each data type |
 | Incomplete Count | Display | Number of missing/incomplete records |
 | Status Icon | Visual Indicator | Green ✓ or Red ✗ |
-| View Screen Button | Button | Navigates to specific maintenance screen |
 | Overall Status | Display | Summary of total issues across all checks |
 
 ## User Actions
 
 - **View Status**: See at-a-glance reference data completeness
-- **Navigate to Fix**: Click "View [Type] Screen" button to resolve issues
 - **Refresh Checks**: Update status after making corrections
 - **Export Results**: Export check results for external review
 - **Switch Tabs**: Navigate to Main File Checks or Portfolio Re-imports
@@ -100,4 +93,4 @@ Validates reference data completeness (instruments, prices, ratings, durations, 
 ## Navigation
 
 - **From:** Start Page, Main File Checks Tab
-- **To:** Instruments Maintenance, Index Prices Maintenance, Durations Maintenance, Betas Maintenance, Credit Ratings Maintenance
+- **To:** Main File Checks Tab, Portfolio Re-imports Tab

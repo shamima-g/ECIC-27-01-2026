@@ -1,7 +1,7 @@
 # Story: Data Confirmation - Real-time Refresh
 
 **Epic:** Data Confirmation & Validation
-**Story:** 5 of 5
+**Story:** 4 of 4
 **Wireframe:** `../../wireframes/screen-5-data-confirmation-main.md`
 
 ## User Story
