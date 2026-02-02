@@ -144,7 +144,10 @@ export function validateFilenamePattern(
 
   if (keyword) {
     // Check if filename contains the keyword (case-insensitive)
-    return filenameLower.includes(keyword);
+    // Also normalize spaces to handle both "InstrumentStatic" and "Instrument Static" variants
+    const normalizedFilename = filenameLower.replace(/\s+/g, '');
+    const normalizedKeyword = keyword.replace(/\s+/g, '');
+    return normalizedFilename.includes(normalizedKeyword);
   }
 
   return true;
