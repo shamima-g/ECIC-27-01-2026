@@ -1,5 +1,5 @@
 /**
- * Epic 3, Story 1: Main File Checks Tab
+ * Epic 3, Story 1: Main Data Checks Tab
  *
  * Tests the completeness status display of portfolio, custodian, and Bloomberg data.
  *
@@ -111,20 +111,20 @@ const createMockMainDataCheck = (
   ...overrides,
 });
 
-describe('Epic 3, Story 1: Main File Checks Tab', () => {
+describe('Epic 3, Story 1: Main Data Checks Tab', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   describe('Tab Display', () => {
-    it('displays three tabs: Main File Checks, Other Checks, and Portfolio Re-imports', async () => {
+    it('displays three tabs: Main Data Checks, Other Checks, and Portfolio Re-imports', async () => {
       mockMonthlyGet.mockResolvedValue(createMockMainDataCheck());
 
       render(<DataConfirmationPage />);
 
       await waitFor(() => {
         expect(
-          screen.getByRole('tab', { name: /main file checks/i }),
+          screen.getByRole('tab', { name: /main data checks/i }),
         ).toBeInTheDocument();
       });
 
@@ -136,13 +136,13 @@ describe('Epic 3, Story 1: Main File Checks Tab', () => {
       ).toBeInTheDocument();
     });
 
-    it('highlights Main File Checks tab as active by default', async () => {
+    it('highlights Main Data Checks tab as active by default', async () => {
       mockMonthlyGet.mockResolvedValue(createMockMainDataCheck());
 
       render(<DataConfirmationPage />);
 
       await waitFor(() => {
-        const mainTab = screen.getByRole('tab', { name: /main file checks/i });
+        const mainTab = screen.getByRole('tab', { name: /main data checks/i });
         expect(mainTab).toHaveAttribute('aria-selected', 'true');
       });
     });

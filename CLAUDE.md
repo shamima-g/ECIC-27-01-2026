@@ -137,6 +137,16 @@ When implementing or modifying features, **always follow Test-Driven Development
 
 The test file should be created/updated first, tests should fail, then implementation follows.
 
+### 7. Keep Documentation in Sync
+
+When modifying UI labels, feature names, tab names, or any user-visible text, you MUST also update the corresponding documentation:
+
+- `generated-docs/stories/` - Story files referencing the changed text
+- `generated-docs/wireframes/` - Wireframe files showing the UI element
+- `documentation/` - Product guide if it references the changed text
+
+This ensures documentation always matches the actual implementation.
+
 ## Testing Strategy
 
 ### Focus on Integration Tests

@@ -4,7 +4,7 @@
  * Data Confirmation Page - Epic 3
  *
  * Multi-tab interface for checking data completeness:
- * - Main File Checks: Portfolio Manager, Custodian, Bloomberg data
+ * - Main Data Checks: Portfolio Manager, Custodian, Bloomberg data
  * - Other Checks: Index prices, instruments, ratings, durations, betas
  * - Portfolio Re-imports: Track re-import status and history
  */
@@ -504,14 +504,14 @@ export default function DataConfirmationPage() {
 
       <Tabs value={activeTab} onValueChange={handleTabChange}>
         <TabsList>
-          <TabsTrigger value="main-file-checks">Main File Checks</TabsTrigger>
+          <TabsTrigger value="main-file-checks">Main Data Checks</TabsTrigger>
           <TabsTrigger value="other-checks">Other Checks</TabsTrigger>
           <TabsTrigger value="portfolio-re-imports">
             Portfolio Re-imports
           </TabsTrigger>
         </TabsList>
 
-        {/* Main File Checks Tab */}
+        {/* Main Data Checks Tab */}
         <TabsContent value="main-file-checks" className="space-y-6 mt-6">
           {loading && (
             <div

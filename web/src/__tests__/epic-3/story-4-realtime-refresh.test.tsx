@@ -130,7 +130,7 @@ describe('Epic 3, Story 4: Real-time Refresh', () => {
 
     // Note: This test verifies polling updates for Other Checks tab which
     // requires complex async handling with fake timers. Core polling for
-    // Main File Checks tab is tested and working. Skipped due to flaky
+    // Main Data Checks tab is tested and working. Skipped due to flaky
     // behavior with fake timers and tab-specific data fetching.
     it.skip('decreases incomplete instrument count when instrument is fixed', async () => {
       const user = userEvent.setup({ delay: null });
