@@ -96,6 +96,14 @@ Popup modal for viewing file status, uploading/replacing files, viewing errors, 
 |    │  │ Upload/Replace│  │ Cancel File  │  │ Retry Valid. │         │       |
 |    │  └──────────────┘  └──────────────┘  └──────────────┘         │       |
 |    │                                                                 │       |
+|    │  ─────────────────────────────────────────────────────────     │       |
+|    │                                                                 │       |
+|    │  Invalid Reasons                                               │       |
+|    │  ┌───────────────────────────────────────────────────────┐    │       |
+|    │  │ Instrument Code "CASH" mapping does not exist         │    │       |
+|    │  │ Instrument Code "CASHBRLLL" mapping does not exist    │    │       |
+|    │  └───────────────────────────────────────────────────────┘    │       |
+|    │                                                                 │       |
 |    │                               [Close]                          │       |
 |    └────────────────────────────────────────────────────────────────┘       |
 |                                                                              |
@@ -115,6 +123,7 @@ Popup modal for viewing file status, uploading/replacing files, viewing errors, 
 | Drag & Drop Area | File Input | Area to drag/drop or browse for files |
 | Error Grid | Table | Lists all validation errors with details |
 | Export Errors | Button | Exports error list to Excel |
+| Invalid Reasons | Table | Displays file-level invalid reasons (parsed from comma-separated string), shown only when present |
 | Browse | Button | Opens file browser dialog |
 | Upload | Button | Confirms and uploads selected file |
 | Close | Button | Closes the modal |
@@ -128,6 +137,7 @@ Popup modal for viewing file status, uploading/replacing files, viewing errors, 
 - **Cancel File**: Remove file from system
 - **Retry Validation**: Re-run validation after corrections
 - **View Errors**: See detailed list of validation errors
+- **View Invalid Reasons**: See file-level invalid reasons (e.g., missing instrument mappings)
 - **Export Errors**: Download error list for offline correction
 
 ## Navigation

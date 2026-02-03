@@ -30,6 +30,11 @@
 - [ ] Given a file has validation errors, when I view the error summary, then I see a count of total errors (e.g., "15 validation errors found")
 - [ ] Given validation fails due to format issues, when I view the errors, then I see clear guidance on the expected format
 
+### Invalid Reasons Display
+- [ ] Given a file has InvalidReasons from the API response, when I view the modal, then I see an "Invalid Reasons" section below the action buttons
+- [ ] Given InvalidReasons contains comma-separated values (e.g., "Reason 1,Reason 2"), when displayed, then each reason appears as a separate row in a table
+- [ ] Given InvalidReasons is empty or null, when I view the modal, then the Invalid Reasons section is hidden
+
 ## API Endpoints (from OpenAPI spec)
 
 | Method | Endpoint | Purpose |
@@ -44,3 +49,5 @@
 - Implement Excel export using a library like `xlsx` or `exceljs`
 - Show loading spinner during retry validation
 - Display user-friendly error messages (translate technical errors if needed)
+- Parse `InvalidReasons` string by splitting on commas to display each reason in a separate table row
+- The Invalid Reasons table should have no column header, just rows of reasons
