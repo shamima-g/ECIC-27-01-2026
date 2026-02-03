@@ -25,6 +25,7 @@ vi.mock('@/lib/api/client', () => ({
   fileImporterPost: vi.fn(),
   fileImporterUpload: vi.fn(),
   fileImporterDel: vi.fn(),
+  monthlyGet: vi.fn(),
 }));
 
 // Mock next-auth session
@@ -37,11 +38,12 @@ vi.mock('@/lib/auth/auth-client', () => ({
   })),
 }));
 
-import { fileImporterGet } from '@/lib/api/client';
+import { fileImporterGet, monthlyGet } from '@/lib/api/client';
 // This import WILL FAIL until implemented - that's the point of TDD!
 import OtherImportsPage from '@/app/imports/other/page';
 
 const mockFileImporterGet = fileImporterGet as ReturnType<typeof vitest.fn>;
+const mockMonthlyGet = monthlyGet as ReturnType<typeof vitest.fn>;
 
 // Type definitions based on FileImporterAPIDefinition.yaml
 interface OtherFile {
@@ -64,29 +66,32 @@ interface OtherFile {
   InvalidReasons: string;
 }
 
-// Mock data factory
-const createMockOtherFile = (
-  overrides: Partial<OtherFile> = {},
-): OtherFile => ({
-  FileLogId: 1,
-  FileSettingId: 1,
-  FileSource: 'Bloomberg',
-  FileFormat: 'Zar',
-  FileFormatId: 1,
-  FileType: 'Monthly Index Files',
-  ReportBatchId: 1,
-  FileName: '202403_MonthlyIndex.xlsx',
-  FileNamePattern: '*MonthlyIndex*.xlsx',
-  StatusColor: 'Green',
-  Message: 'File uploaded successfully',
-  Action: 'View',
-  WorkflowInstanceId: 'wf-123',
-  WorkflowStatusName: 'Complete',
-  StartDate: '2024-03-01T10:00:00Z',
-  EndDate: '2024-03-01T10:05:00Z',
-  InvalidReasons: '',
-  ...overrides,
-});
+// Mock data factory with auto-incrementing FileLogId
+let fileLogIdCounter = 0;
+
+const createMockOtherFile = (overrides: Partial<OtherFile> = {}): OtherFile => {
+  fileLogIdCounter += 1;
+  return {
+    FileLogId: fileLogIdCounter,
+    FileSettingId: fileLogIdCounter,
+    FileSource: 'Bloomberg',
+    FileFormat: 'Zar',
+    FileFormatId: 1,
+    FileType: 'Monthly Index Files',
+    ReportBatchId: 1,
+    FileName: '202403_MonthlyIndex.xlsx',
+    FileNamePattern: '*MonthlyIndex*.xlsx',
+    StatusColor: 'Green',
+    Message: 'File uploaded successfully',
+    Action: 'View',
+    WorkflowInstanceId: `wf-${fileLogIdCounter}`,
+    WorkflowStatusName: 'Complete',
+    StartDate: '2024-03-01T10:00:00Z',
+    EndDate: '2024-03-01T10:05:00Z',
+    InvalidReasons: '',
+    ...overrides,
+  };
+};
 
 const createMockOtherFilesResponse = (files: OtherFile[] = []) => ({
   Files: files,
@@ -94,7 +99,26 @@ const createMockOtherFilesResponse = (files: OtherFile[] = []) => ({
 
 describe('Epic 2, Story 2: Other Imports Dashboard - List View', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    // Use resetAllMocks to clear mock implementations (including mockResolvedValueOnce queue)
+    vi.resetAllMocks();
+    // Reset the FileLogId counter for consistent test behavior
+    fileLogIdCounter = 0;
+    // Mock monthlyGet for useWorkflowAccessControl hook - returns PrepareData state (unlocked)
+    mockMonthlyGet.mockResolvedValue({
+      MonthlyReportBatches: [
+        {
+          ReportBatchId: 1,
+          ReportDate: '2024-03-01',
+          LastExecutedActivityName: 'PrepareData',
+          FinishedAt: null,
+        },
+      ],
+    });
+  });
+
+  afterEach(() => {
+    // Ensure fake timers are cleaned up between tests
+    vi.useRealTimers();
   });
 
   describe('List Display', () => {
@@ -320,15 +344,13 @@ describe('Epic 2, Story 2: Other Imports Dashboard - List View', () => {
         createMockOtherFilesResponse(updatedFiles),
       );
 
-      // Advance timers to trigger polling (5 seconds)
-      vi.advanceTimersByTime(5000);
+      // Advance timers to trigger polling (5 seconds) - use async version for proper promise resolution
+      await vi.advanceTimersByTimeAsync(5000);
 
       // Status should update to complete
       await waitFor(() => {
         expect(screen.getByLabelText(/complete|success/i)).toBeInTheDocument();
       });
-
-      vi.useRealTimers();
     });
 
     it('stops polling when no files are in "Busy" state', async () => {
@@ -353,13 +375,11 @@ describe('Epic 2, Story 2: Other Imports Dashboard - List View', () => {
       // Clear call count
       mockFileImporterGet.mockClear();
 
-      // Advance timers by 10 seconds
-      vi.advanceTimersByTime(10000);
+      // Advance timers by 10 seconds - use async version for consistency
+      await vi.advanceTimersByTimeAsync(10000);
 
       // Should not poll when all files are complete
       expect(mockFileImporterGet).not.toHaveBeenCalled();
-
-      vi.useRealTimers();
     });
   });
 
