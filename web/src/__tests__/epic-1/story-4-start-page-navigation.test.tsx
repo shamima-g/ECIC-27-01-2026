@@ -71,8 +71,9 @@ describe('Epic 1, Story 4: Start Page - Navigation Links', () => {
       });
 
       // All main navigation links should be visible
+      // Note: File Uploads is a button (dropdown trigger), not a link
       expect(
-        screen.getByRole('link', { name: /File Uploads/i }),
+        screen.getByRole('button', { name: /File Uploads/i }),
       ).toBeInTheDocument();
       expect(
         screen.getByRole('link', { name: /Data Confirmation/i }),
@@ -92,20 +93,30 @@ describe('Epic 1, Story 4: Start Page - Navigation Links', () => {
     });
 
     it('navigates to Portfolio Imports Dashboard when File Uploads is clicked', async () => {
+      const user = userEvent.setup();
       mockGet.mockResolvedValue(createMockBatches());
 
       render(<HomePage />);
 
       await waitFor(() => {
         expect(
-          screen.getByRole('link', { name: /File Uploads/i }),
+          screen.getByRole('button', { name: /File Uploads/i }),
         ).toBeInTheDocument();
       });
 
-      const fileUploadsLink = screen.getByRole('link', {
+      // File Uploads is a dropdown button that shows submenu with links
+      const fileUploadsButton = screen.getByRole('button', {
         name: /File Uploads/i,
       });
-      expect(fileUploadsLink).toHaveAttribute('href', '/imports/portfolio');
+      await user.click(fileUploadsButton);
+
+      // Submenu should show Portfolio Imports link
+      await waitFor(() => {
+        const portfolioLink = screen.getByRole('link', {
+          name: /Portfolio Imports/i,
+        });
+        expect(portfolioLink).toHaveAttribute('href', '/imports/portfolio');
+      });
     });
 
     it('navigates to Data Confirmation screen when Data Confirmation is clicked', async () => {
@@ -289,8 +300,9 @@ describe('Epic 1, Story 4: Start Page - Navigation Links', () => {
 
       await waitFor(() => {
         // All sections visible including Administration
+        // Note: File Uploads is a button (dropdown trigger)
         expect(
-          screen.getByRole('link', { name: /File Uploads/i }),
+          screen.getByRole('button', { name: /File Uploads/i }),
         ).toBeInTheDocument();
         expect(
           screen.getByRole('link', { name: /Administration/i }),
@@ -308,7 +320,7 @@ describe('Epic 1, Story 4: Start Page - Navigation Links', () => {
 
       await waitFor(() => {
         expect(
-          screen.getByRole('link', { name: /File Uploads/i }),
+          screen.getByRole('button', { name: /File Uploads/i }),
         ).toBeInTheDocument();
         expect(
           screen.queryByRole('link', { name: /Administration/i }),
@@ -334,14 +346,15 @@ describe('Epic 1, Story 4: Start Page - Navigation Links', () => {
       render(<HomePage />);
 
       await waitFor(() => {
-        const fileUploadsLink = screen.getByRole('link', {
+        // File Uploads is a button (dropdown trigger)
+        const fileUploadsButton = screen.getByRole('button', {
           name: /File Uploads/i,
         });
-        expect(fileUploadsLink).toBeInTheDocument();
+        expect(fileUploadsButton).toBeInTheDocument();
 
-        // Link should be focusable
-        fileUploadsLink.focus();
-        expect(document.activeElement).toBe(fileUploadsLink);
+        // Button should be focusable
+        fileUploadsButton.focus();
+        expect(document.activeElement).toBe(fileUploadsButton);
       });
     });
 

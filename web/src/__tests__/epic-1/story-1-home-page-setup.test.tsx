@@ -87,9 +87,10 @@ describe('Epic 1, Story 1: Home Page Setup', () => {
       render(<HomePage />);
 
       await waitFor(() => {
-        // User can access main navigation links
+        // User can access main navigation
+        // Note: File Uploads is a button (dropdown trigger), others are links
         expect(
-          screen.getByRole('link', { name: /File Uploads/i }),
+          screen.getByRole('button', { name: /File Uploads/i }),
         ).toBeInTheDocument();
         expect(
           screen.getByRole('link', { name: /Data Confirmation/i }),
