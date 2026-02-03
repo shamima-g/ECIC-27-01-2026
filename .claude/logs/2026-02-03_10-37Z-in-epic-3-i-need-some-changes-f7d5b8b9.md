@@ -334,3 +334,116 @@ _**User: shamima-g (2026-02-03 11:05Z)**_
 
 Update claude.md and commit and push
 
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Read_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Edit_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+Now let me commit and push the changes.
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Bash_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Bash_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Bash_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: TodoWrite_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Bash_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Bash_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Bash_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Bash_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+Done. Committed and pushed:
+
+**Commit `9ef14db`:** Rename Main File Checks tab to Main Data Checks and add doc sync rule
+
+Changes included:
+- Tab renamed in [page.tsx](web/src/app/data-confirmation/page.tsx)
+- Tests updated in [story-1-main-file-checks-tab.test.tsx](web/src/__tests__/epic-3/story-1-main-file-checks-tab.test.tsx) and [story-4-realtime-refresh.test.tsx](web/src/__tests__/epic-3/story-4-realtime-refresh.test.tsx)
+- Added **Rule 7: Keep Documentation in Sync** to [CLAUDE.md](CLAUDE.md)
+
+---
+
+
+_**User: shamima-g (2026-02-03 11:15Z)**_
+
+Update story-1-main-file-checks-tab.md
+
+Update _epic-overview.md
+
+Update story-4-realtime-refresh.md
+
+Update wireframe files
+
+Update product guide
+

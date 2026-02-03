@@ -15,7 +15,7 @@
 ### Automatic Refresh
 - [ ] Given I am on the Data Confirmation screen, when data is modified in maintenance screens, then the check statuses update automatically (within 10 seconds)
 - [ ] Given I fix an incomplete instrument, when the change is saved, then the "Instruments incomplete" count decreases by 1 on the Other Checks tab
-- [ ] Given I upload a missing file, when validation completes, then the corresponding completeness flag updates from red X to green checkmark on Main File Checks
+- [ ] Given I upload a missing file, when validation completes, then the corresponding completeness flag updates from red X to green checkmark on Main Data Checks
 
 ### Manual Refresh Button
 - [ ] Given I am on Data Confirmation, when I click the "Refresh" button in the toolbar, then all check statuses are re-fetched from the API immediately

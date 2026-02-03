@@ -1,4 +1,4 @@
-# Screen: Data Confirmation - Main File Checks Tab
+# Screen: Data Confirmation - Main Data Checks Tab
 
 ## Purpose
 
@@ -15,7 +15,7 @@ Verifies portfolio and custodian data completeness with status grid showing at-a
 |  Data Confirmation                                                           |
 |  ────────────────────────────────────────────────────────────────────────    |
 |                                                                              |
-|  [Main File Checks] [Other Checks] [Portfolio Re-imports]                    |
+|  [Main Data Checks] [Other Checks] [Portfolio Re-imports]                    |
 |                                                                              |
 |  [Refresh Checks]  [Export Results]                      Report Date: Jan-31|
 |                                                                              |
@@ -72,7 +72,7 @@ Note: Use the navigation menu to access file upload screens for resolving issues
 
 | Element | Type | Description |
 |---------|------|-------------|
-| Main File Checks Tab | Tab | Active tab showing file completeness |
+| Main Data Checks Tab | Tab | Active tab showing data completeness |
 | Other Checks Tab | Tab | Tab for reference data checks |
 | Portfolio Re-imports Tab | Tab | Tab for re-import status |
 | Refresh Checks | Button | Updates check status in real-time |

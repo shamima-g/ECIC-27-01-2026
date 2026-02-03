@@ -15,7 +15,7 @@ Validates reference data completeness (instruments, prices, ratings, durations, 
 |  Data Confirmation                                                           |
 |  ────────────────────────────────────────────────────────────────────────    |
 |                                                                              |
-|  [Main File Checks] [Other Checks] [Portfolio Re-imports]                    |
+|  [Main Data Checks] [Other Checks] [Portfolio Re-imports]                    |
 |                                                                              |
 |  [Refresh Checks]  [Export Results]                      Report Date: Jan-31|
 |                                                                              |
@@ -88,9 +88,9 @@ Validates reference data completeness (instruments, prices, ratings, durations, 
 - **View Status**: See at-a-glance reference data completeness
 - **Refresh Checks**: Update status after making corrections
 - **Export Results**: Export check results for external review
-- **Switch Tabs**: Navigate to Main File Checks or Portfolio Re-imports
+- **Switch Tabs**: Navigate to Main Data Checks or Portfolio Re-imports
 
 ## Navigation
 
-- **From:** Start Page, Main File Checks Tab
-- **To:** Main File Checks Tab, Portfolio Re-imports Tab
+- **From:** Start Page, Main Data Checks Tab
+- **To:** Main Data Checks Tab, Portfolio Re-imports Tab

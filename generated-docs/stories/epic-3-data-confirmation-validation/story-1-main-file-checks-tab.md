@@ -1,4 +1,4 @@
-# Story: Data Confirmation - Main File Checks Tab
+# Story: Data Confirmation - Main Data Checks Tab
 
 **Epic:** Data Confirmation & Validation
 **Story:** 1 of 5
@@ -13,24 +13,24 @@
 ## Acceptance Criteria
 
 ### Tab Display
-- [ ] Given I navigate to Data Confirmation, when the page loads, then I see three tabs: "Main File Checks", "Other Checks", and "Portfolio Re-imports"
-- [ ] Given I am on the Main File Checks tab, when I view the page, then the tab is highlighted as active
+- [ ] Given I navigate to Data Confirmation, when the page loads, then I see three tabs: "Main Data Checks", "Other Checks", and "Portfolio Re-imports"
+- [ ] Given I am on the Main Data Checks tab, when I view the page, then the tab is highlighted as active
 
 ### Portfolio Manager Data Grid
-- [ ] Given the Main File Checks tab is active, when I view the grid, then I see a section titled "Portfolio Manager Data"
+- [ ] Given the Main Data Checks tab is active, when I view the grid, then I see a section titled "Portfolio Manager Data"
 - [ ] Given the Portfolio Manager Data section is displayed, when I view the columns, then I see: PortfolioCode, HoldingDataComplete, TransactionDataComplete, IncomeDataComplete, CashDataComplete, PerformanceDataComplete, ManagementFeeDataComplete
 - [ ] Given a portfolio's data is complete, when I view its row, then I see a green checkmark icon in the corresponding column
 - [ ] Given a portfolio's data is incomplete, when I view its row, then I see a red X icon in the corresponding column
 - [ ] Given all portfolios have complete data, when I view the section, then I see a summary badge "All portfolios complete" in green
 
 ### Custodian Data Grid
-- [ ] Given the Main File Checks tab is active, when I scroll down, then I see a section titled "Custodian Data"
+- [ ] Given the Main Data Checks tab is active, when I scroll down, then I see a section titled "Custodian Data"
 - [ ] Given the Custodian Data section is displayed, when I view the columns, then I see: PortfolioCode, CustodianHoldingDataComplete, CustodianTransactionDataComplete, CustodianCashDataComplete, CustodianFeeDataComplete
 - [ ] Given custodian data is complete, when I view a cell, then I see a green checkmark icon
 - [ ] Given custodian data is incomplete, when I view a cell, then I see a red X icon
 
 ### Bloomberg Holdings Grid
-- [ ] Given the Main File Checks tab is active, when I scroll down, then I see a section titled "Bloomberg Holdings"
+- [ ] Given the Main Data Checks tab is active, when I scroll down, then I see a section titled "Bloomberg Holdings"
 - [ ] Given the Bloomberg Holdings section is displayed, when I view the columns, then I see: PortfolioCode, BloombergHoldingDataComplete
 - [ ] Given Bloomberg holdings are complete, when I view a cell, then I see a green checkmark icon
 - [ ] Given Bloomberg holdings are incomplete, when I view a cell, then I see a red X icon

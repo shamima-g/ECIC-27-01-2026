@@ -55,7 +55,7 @@ Start Page
     │   └─→ Other Imports Dashboard
     │       └─→ File Upload Modal
     ├─→ Data Confirmation
-    │   ├─→ Main File Checks Tab
+    │   ├─→ Main Data Checks Tab
     │   ├─→ Other Checks Tab
     │   │   └─→ Maintenance Screens (to fix issues)
     │   └─→ Portfolio Re-imports Tab

@@ -15,7 +15,7 @@ Manages re-import status for portfolios, showing which portfolios have requested
 |  Data Confirmation                                                           |
 |  ────────────────────────────────────────────────────────────────────────    |
 |                                                                              |
-|  [Main File Checks] [Other Checks] [Portfolio Re-imports]                    |
+|  [Main Data Checks] [Other Checks] [Portfolio Re-imports]                    |
 |                                                                              |
 |  [Refresh Status]  [Export Results]                      Report Date: Jan-31|
 |                                                                              |
@@ -73,5 +73,5 @@ Manages re-import status for portfolios, showing which portfolios have requested
 
 ## Navigation
 
-- **From:** Main File Checks Tab, Other Checks Tab
-- **To:** Main File Checks Tab, Other Checks Tab
+- **From:** Main Data Checks Tab, Other Checks Tab
+- **To:** Main Data Checks Tab, Other Checks Tab

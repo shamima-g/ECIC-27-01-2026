@@ -273,11 +273,11 @@ Data Confirmation provides a single consolidated view to verify that all require
 
 The Data Confirmation screen is organized into tabs:
 
-1. **Main File Checks Tab** - Verifies portfolio and custodian data completeness
+1. **Main Data Checks Tab** - Verifies portfolio and custodian data completeness
 2. **Other Checks Tab** - Validates reference data (instruments, prices, ratings, durations, betas)
 3. **Portfolio Re-imports Tab** - Manages re-import status for portfolios
 
-**Main File Checks Grid**
+**Main Data Checks Grid**
 
 **Portfolio Manager Data:**
 

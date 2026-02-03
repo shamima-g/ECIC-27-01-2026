@@ -2,11 +2,11 @@
 
 ## Description
 
-This epic implements the Data Confirmation screen, which provides a consolidated view to verify that all required data is complete and valid before proceeding to approvals. The screen is organized into three tabs: Main File Checks (portfolio/custodian data), Other Checks (reference data), and Portfolio Re-imports. Users can view the status of data completeness and use the standard navigation menu to access maintenance screens for fixes.
+This epic implements the Data Confirmation screen, which provides a consolidated view to verify that all required data is complete and valid before proceeding to approvals. The screen is organized into three tabs: Main Data Checks (portfolio/custodian data), Other Checks (reference data), and Portfolio Re-imports. Users can view the status of data completeness and use the standard navigation menu to access maintenance screens for fixes.
 
 ## Stories
 
-1. **Data Confirmation - Main File Checks Tab** - Verify portfolio, custodian, and Bloomberg data completeness
+1. **Data Confirmation - Main Data Checks Tab** - Verify portfolio, custodian, and Bloomberg data completeness
    - File: `story-1-main-file-checks-tab.md`
    - Status: Pending
 
