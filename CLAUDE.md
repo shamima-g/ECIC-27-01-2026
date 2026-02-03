@@ -121,6 +121,22 @@ Report actual exit codes truthfully. Never rationalize failures as "expected" or
 
 `npm run test:quality` must always pass. Anti-patterns in test files (even skipped tests) will fail CI/CD. In TDD, failing tests create expected TypeScript errors, but this still counts as a failed quality gate until implementation is complete.
 
+### 6. Follow TDD Strictly
+
+When implementing or modifying features, **always follow Test-Driven Development**:
+
+1. **Red Phase** - Write failing tests first based on acceptance criteria
+2. **Green Phase** - Write minimal code to make tests pass
+3. **Refactor Phase** - Improve code while keeping tests green
+
+**Never write implementation code before tests.** This applies to:
+- New features
+- Bug fixes
+- Modifications to existing stories
+- Any code that has acceptance criteria
+
+The test file should be created/updated first, tests should fail, then implementation follows.
+
 ## Testing Strategy
 
 ### Focus on Integration Tests
