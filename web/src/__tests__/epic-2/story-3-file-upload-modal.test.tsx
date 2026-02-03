@@ -520,6 +520,101 @@ describe('Epic 2, Story 3: File Upload Modal', () => {
     });
   });
 
+  describe('Invalid Reasons Display', () => {
+    it('displays Invalid Reasons section when InvalidReasons is present', () => {
+      const fileDetails = createMockFileDetails({
+        StatusColor: 'Red',
+        InvalidReasons:
+          'Instrument Code "CASH" mapping does not exist,Instrument Code "CASHBRLLL" mapping does not exist',
+      });
+
+      render(
+        <FileUploadModal
+          isOpen={true}
+          onClose={() => {}}
+          fileType="Holdings"
+          portfolioName="Coronation Fund"
+          statusColor="Red"
+          fileDetails={fileDetails}
+        />,
+      );
+
+      expect(screen.getByText('Invalid Reasons')).toBeInTheDocument();
+      expect(
+        screen.getByText('Instrument Code "CASH" mapping does not exist'),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText('Instrument Code "CASHBRLLL" mapping does not exist'),
+      ).toBeInTheDocument();
+    });
+
+    it('displays each comma-separated reason as a separate row', () => {
+      const fileDetails = createMockFileDetails({
+        StatusColor: 'Red',
+        InvalidReasons: 'Reason 1,Reason 2,Reason 3',
+      });
+
+      render(
+        <FileUploadModal
+          isOpen={true}
+          onClose={() => {}}
+          fileType="Holdings"
+          portfolioName="Coronation Fund"
+          statusColor="Red"
+          fileDetails={fileDetails}
+        />,
+      );
+
+      // Each reason should be in a separate row
+      const rows = screen.getAllByRole('row');
+      expect(rows.length).toBe(3);
+      expect(screen.getByText('Reason 1')).toBeInTheDocument();
+      expect(screen.getByText('Reason 2')).toBeInTheDocument();
+      expect(screen.getByText('Reason 3')).toBeInTheDocument();
+    });
+
+    it('hides Invalid Reasons section when InvalidReasons is empty', () => {
+      const fileDetails = createMockFileDetails({
+        StatusColor: 'Red',
+        InvalidReasons: '',
+      });
+
+      render(
+        <FileUploadModal
+          isOpen={true}
+          onClose={() => {}}
+          fileType="Holdings"
+          portfolioName="Coronation Fund"
+          statusColor="Red"
+          fileDetails={fileDetails}
+        />,
+      );
+
+      expect(screen.queryByText('Invalid Reasons')).not.toBeInTheDocument();
+    });
+
+    it('hides Invalid Reasons section when fileDetails has no InvalidReasons field', () => {
+      const fileDetails = createMockFileDetails({
+        StatusColor: 'Green',
+      });
+      // Explicitly remove InvalidReasons
+      fileDetails.InvalidReasons = '';
+
+      render(
+        <FileUploadModal
+          isOpen={true}
+          onClose={() => {}}
+          fileType="Holdings"
+          portfolioName="Coronation Fund"
+          statusColor="Green"
+          fileDetails={fileDetails}
+        />,
+      );
+
+      expect(screen.queryByText('Invalid Reasons')).not.toBeInTheDocument();
+    });
+  });
+
   describe('Accessibility', () => {
     it('has no accessibility violations', async () => {
       const fileDetails = createMockFileDetails();

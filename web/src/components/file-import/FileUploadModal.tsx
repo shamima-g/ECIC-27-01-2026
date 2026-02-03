@@ -467,6 +467,29 @@ export function FileUploadModal({
               onRetrySuccess={onSuccess}
             />
           )}
+
+          {/* Invalid Reasons section - displayed when InvalidReasons is present */}
+          {fileDetails?.InvalidReasons && (
+            <div className="border rounded p-3 bg-red-50 space-y-2">
+              <h4 className="font-medium text-red-900 border-b border-red-200 pb-1 mb-2">
+                Invalid Reasons
+              </h4>
+              <table className="w-full text-sm">
+                <tbody>
+                  {fileDetails.InvalidReasons.split(',').map(
+                    (reason, index) => (
+                      <tr
+                        key={index}
+                        className="border-b border-red-100 last:border-b-0"
+                      >
+                        <td className="py-1 text-red-800">{reason.trim()}</td>
+                      </tr>
+                    ),
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>
