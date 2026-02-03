@@ -447,3 +447,419 @@ Update wireframe files
 
 Update product guide
 
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: TodoWrite_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Read_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Read_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Read_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Read_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Read_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Read_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Read_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Grep_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+Now I'll update all the documentation files.
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Edit_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Edit_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Edit_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Edit_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Edit_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: TodoWrite_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Edit_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Edit_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: TodoWrite_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Edit_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: TodoWrite_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Edit_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Edit_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Edit_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Edit_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Edit_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Edit_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Edit_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Edit_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Edit_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: TodoWrite_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Read_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Edit_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Edit_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: TodoWrite_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+Now let me commit and push these documentation changes.
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Bash_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Bash_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Bash_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Bash_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: TodoWrite_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+Done. All documentation updated and pushed.
+
+**Commit `7625563`:** Update documentation to rename Main File Checks to Main Data Checks
+
+**Updated files:**
+- [story-1-main-file-checks-tab.md](generated-docs/stories/epic-3-data-confirmation-validation/story-1-main-file-checks-tab.md) - Title and acceptance criteria
+- [_epic-overview.md](generated-docs/stories/epic-3-data-confirmation-validation/_epic-overview.md) - Description and story list
+- [story-4-realtime-refresh.md](generated-docs/stories/epic-3-data-confirmation-validation/story-4-realtime-refresh.md) - Acceptance criteria
+- [screen-5-data-confirmation-main.md](generated-docs/wireframes/screen-5-data-confirmation-main.md) - Title, wireframe, elements table
+- [screen-6-data-confirmation-other.md](generated-docs/wireframes/screen-6-data-confirmation-other.md) - Wireframe and navigation
+- [screen-7-data-confirmation-reimports.md](generated-docs/wireframes/screen-7-data-confirmation-reimports.md) - Wireframe and navigation
+- [_overview.md](generated-docs/wireframes/_overview.md) - Screen flow diagram
+- [InvestInsight-Product-Guide-v2.md](documentation/InvestInsight-Product-Guide-v2.md) - Tab structure and grid heading
+
+---
+
+
+_**User: shamima-g (2026-02-03 11:37Z)**_
+
+Do you have refresh button in the documentation?  Ot is it anmed something else? Don't do anything just explain
+
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+Good catch. There's a mismatch:
+
+**In the wireframes:**
+- screen-5 (Main Data Checks): `[Refresh Checks]`
+- screen-6 (Other Checks): `[Refresh Checks]`
+- screen-7 (Portfolio Re-imports): `[Refresh Status]`
+
+**In the actual implementation (your screenshot):**
+- Just `Refresh`
+
+So the documentation says "Refresh Checks" / "Refresh Status" but the code just shows "Refresh".
+
+---
+
+
+_**User: shamima-g (2026-02-03 11:38Z)**_
+
+Don't you have a "confirm data" button? Just check, don't do anything
+
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+Looking at the wireframes I read earlier:
+
+**Buttons shown in wireframes:**
+- `[Refresh Checks]` / `[Refresh Status]`
+- `[Export Results]`
+
+I did **not** see a "Confirm Data" button in the Data Confirmation wireframes. The screen appears to be read-only for checking completeness status, with users proceeding to the separate Approvals screens (Level 1, 2, 3) to actually confirm/approve.
+
+---
+
+
+_**User: shamima-g (2026-02-03 11:39Z)**_
+
+Check the "confirm Data " teh documentation
+
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Grep_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+Found it. In [story-5-file-access-restrictions.md](generated-docs/stories/epic-2-file-import-management/story-5-file-access-restrictions.md):
+
+```
+- [ ] Given the batch has `LastExecutedActivityName = "PrepareData"`, when I navigate to Data Confirmation screens, then I can confirm data
+```
+
+So the documentation **does** mention a "confirm data" action that should be available on the Data Confirmation screen during the PrepareData phase. But I don't see a corresponding button in the wireframes (screen-5, 6, 7) or in the current implementation.
+
+This appears to be a gap - the access restriction story mentions the capability, but the wireframes don't show the UI element for it.
+
+---
+
+
+_**User: shamima-g (2026-02-03 11:53Z)**_
+
+commit and push
+
