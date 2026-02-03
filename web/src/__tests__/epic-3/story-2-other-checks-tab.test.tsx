@@ -156,8 +156,9 @@ describe('Epic 3, Story 2: Other Checks Tab', () => {
       });
       await user.click(otherChecksTab);
 
+      // All check types default to 0 incomplete, so multiple badges show "0 incomplete"
       await waitFor(() => {
-        expect(screen.getByText(/0 incomplete/i)).toBeInTheDocument();
+        expect(screen.getAllByText(/0 incomplete/i).length).toBeGreaterThan(0);
       });
     });
 

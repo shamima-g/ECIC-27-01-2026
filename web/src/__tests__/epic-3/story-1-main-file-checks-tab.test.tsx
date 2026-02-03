@@ -164,18 +164,18 @@ describe('Epic 3, Story 1: Main File Checks Tab', () => {
 
       render(<DataConfirmationPage />);
 
+      // Wait for page to load - PortfolioCode appears in multiple tables
       await waitFor(() => {
-        expect(screen.getByText(/portfoliocode/i)).toBeInTheDocument();
+        expect(screen.getAllByText(/portfoliocode/i).length).toBeGreaterThan(0);
       });
 
-      expect(screen.getByText(/holdingdatacomplete/i)).toBeInTheDocument();
-      expect(screen.getByText(/transactiondatacomplete/i)).toBeInTheDocument();
-      expect(screen.getByText(/incomedatacomplete/i)).toBeInTheDocument();
-      expect(screen.getByText(/cashdatacomplete/i)).toBeInTheDocument();
-      expect(screen.getByText(/performancedatacomplete/i)).toBeInTheDocument();
-      expect(
-        screen.getByText(/managementfeedatacomplete/i),
-      ).toBeInTheDocument();
+      // Use exact text match to avoid matching CustodianHoldingDataComplete etc.
+      expect(screen.getByText('HoldingDataComplete')).toBeInTheDocument();
+      expect(screen.getByText('TransactionDataComplete')).toBeInTheDocument();
+      expect(screen.getByText('IncomeDataComplete')).toBeInTheDocument();
+      expect(screen.getByText('CashDataComplete')).toBeInTheDocument();
+      expect(screen.getByText('PerformanceDataComplete')).toBeInTheDocument();
+      expect(screen.getByText('ManagementFeeDataComplete')).toBeInTheDocument();
     });
 
     it('displays green checkmark icon for complete portfolio data', async () => {
@@ -192,8 +192,9 @@ describe('Epic 3, Story 1: Main File Checks Tab', () => {
 
       render(<DataConfirmationPage />);
 
+      // Wait for page to load - PORT001 appears in multiple tables (PM, Custodian, Bloomberg)
       await waitFor(() => {
-        expect(screen.getByText('PORT001')).toBeInTheDocument();
+        expect(screen.getAllByText('PORT001').length).toBeGreaterThan(0);
       });
 
       // Should have checkmarks for complete data (exact icon implementation varies)
@@ -292,9 +293,7 @@ describe('Epic 3, Story 1: Main File Checks Tab', () => {
       expect(
         screen.getByText(/custodiancashdatacomplete/i),
       ).toBeInTheDocument();
-      expect(
-        screen.getByText(/custodianfeedatacomplete/i),
-      ).toBeInTheDocument();
+      expect(screen.getByText(/custodianfeedatacomplete/i)).toBeInTheDocument();
     });
 
     it('displays green checkmark icon for complete custodian data', async () => {
@@ -315,7 +314,8 @@ describe('Epic 3, Story 1: Main File Checks Tab', () => {
         expect(screen.getByText(/custodian data/i)).toBeInTheDocument();
       });
 
-      expect(screen.getByText('PORT001')).toBeInTheDocument();
+      // PORT001 appears in multiple tables
+      expect(screen.getAllByText('PORT001').length).toBeGreaterThan(0);
     });
 
     it('displays red X icon for incomplete custodian data', async () => {
@@ -381,7 +381,8 @@ describe('Epic 3, Story 1: Main File Checks Tab', () => {
         expect(screen.getByText(/bloomberg holdings/i)).toBeInTheDocument();
       });
 
-      expect(screen.getByText('PORT001')).toBeInTheDocument();
+      // PORT001 appears in multiple tables
+      expect(screen.getAllByText('PORT001').length).toBeGreaterThan(0);
     });
 
     it('displays red X icon for incomplete Bloomberg holdings', async () => {
