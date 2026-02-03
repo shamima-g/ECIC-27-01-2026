@@ -680,3 +680,59 @@ _**User: shamima-g (2026-02-03 02:58Z)**_
 
 Update claude instructions file so that you follow TDD strictly for subsequent changes?
 
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Read_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Edit_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+
+
+_Tools used: Bash_
+
+---
+
+_**Agent (model claude-opus-4-5-20251101)**_
+
+Done. Pushed as `f65c662`.
+
+Added **Critical Rule #6: Follow TDD Strictly** to CLAUDE.md:
+
+```markdown
+### 6. Follow TDD Strictly
+
+When implementing or modifying features, **always follow Test-Driven Development**:
+
+1. **Red Phase** - Write failing tests first based on acceptance criteria
+2. **Green Phase** - Write minimal code to make tests pass
+3. **Refactor Phase** - Improve code while keeping tests green
+
+**Never write implementation code before tests.** This applies to:
+- New features
+- Bug fixes
+- Modifications to existing stories
+- Any code that has acceptance criteria
+```
+
+I will follow this strictly for all subsequent changes.
+
+---
+
+
+_**User: shamima-g (2026-02-03 03:00Z)**_
+
+commit and push
+
