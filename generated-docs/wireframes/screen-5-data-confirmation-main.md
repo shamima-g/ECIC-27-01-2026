@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Verifies portfolio and custodian data completeness with status grid showing at-a-glance data readiness before proceeding to approvals.
+Verifies portfolio and custodian data completeness with status grid showing at-a-glance data readiness before proceeding to approvals. When all checks pass, users can submit for approval to advance the workflow.
 
 ## Wireframe
 
@@ -17,7 +17,7 @@ Verifies portfolio and custodian data completeness with status grid showing at-a
 |                                                                              |
 |  [Main Data Checks] [Other Checks] [Portfolio Re-imports]                    |
 |                                                                              |
-|  [Refresh Checks]  [Export Results]                      Report Date: Jan-31|
+|  [Refresh Checks]  [Export Results]    [Submit for Approval]  Report Date: Jan-31|
 |                                                                              |
 |  Portfolio Manager Data                                                      |
 |  +------------------------------------------------------------------------+  |
@@ -77,6 +77,7 @@ Note: Use the navigation menu to access file upload screens for resolving issues
 | Portfolio Re-imports Tab | Tab | Tab for re-import status |
 | Refresh Checks | Button | Updates check status in real-time |
 | Export Results | Button | Exports check results to Excel |
+| Submit for Approval | Button | Submits data preparation for approval (enabled only when all checks pass) |
 | Status Indicators | Icon | Green ✓, Red ✗, or Gray ○ showing data status |
 | Portfolio Manager Grid | Table | Shows PM data completeness by portfolio |
 | Custodian Grid | Table | Shows custodian data completeness by portfolio |
