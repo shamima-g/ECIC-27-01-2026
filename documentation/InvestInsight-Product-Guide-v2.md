@@ -262,25 +262,32 @@ Within the popup modal for each file:
 ---
 
 **Screen 3: Data Confirmation**
-
 **Purpose**
-
+ 
 Data Confirmation provides a single consolidated view to verify that all required data is complete and valid before proceeding to approvals. It guides users to specific fixes when issues are detected.
-
+ 
 **Screen Components**
-
+ 
 **Tab Structure**
-
+ 
 The Data Confirmation screen is organized into tabs:
+ 
+1. **File Checks** - Shows a summary (counts of files percategory) to confirm how many files are required and how many have been imported
+2. **Main Data Checks Tab** - Verifies portfolio and custodian data completeness
+3. **Other Checks Tab** - Validates reference data (instruments, prices, ratings, durations, betas)
+ 
+**File Checks Grid**
 
-1. **Main Data Checks Tab** - Verifies portfolio and custodian data completeness
-2. **Other Checks Tab** - Validates reference data (instruments, prices, ratings, durations, betas)
-3. **Portfolio Re-imports Tab** - Manages re-import status for portfolios
+| File Source | Expected File Count | Actual File Count|
+|-------|------|-------------|
+| AssetManager| integer | integer  |
+| Bloomberg| integer | integer  |
+| Custodian | integer | integer  |
 
 **Main Data Checks Grid**
-
+ 
 **Portfolio Manager Data:**
-
+ 
 | Field | Type | Description |
 |-------|------|-------------|
 | PortfolioCode | String | Portfolio identifier |
@@ -290,9 +297,9 @@ The Data Confirmation screen is organized into tabs:
 | CashDataComplete | String | Cash data status |
 | PerformanceDataComplete | String | Performance data status |
 | ManagementFeeDataComplete | String | Management fee data status |
-
+ 
 **Custodian Data:**
-
+ 
 | Field | Type | Description |
 |-------|------|-------------|
 | PortfolioCode | String | Portfolio identifier |
@@ -300,16 +307,16 @@ The Data Confirmation screen is organized into tabs:
 | CustodianTransactionDataComplete | String | Custodian transaction status |
 | CustodianCashDataComplete | String | Custodian cash status |
 | CustodianFeeDataComplete | String | Custodian fee status |
-
+ 
 **Bloomberg Holdings:**
-
+ 
 | Field | Type | Description |
 |-------|------|-------------|
 | PortfolioCode | String | Portfolio identifier |
 | BloombergHoldingDataComplete | String | Bloomberg holding status |
-
+ 
 **Other Checks Summary**
-
+ 
 | Check Type | Description |
 |------------|-------------|
 | Index Price Incomplete Count | Number of missing index prices |
@@ -317,27 +324,27 @@ The Data Confirmation screen is organized into tabs:
 | Credit Rating Incomplete Count | Number of missing credit ratings |
 | Instrument Duration Incomplete Count | Number of missing duration entries |
 | Instrument Beta Incomplete Count | Number of missing beta entries |
-
+ 
 **Functional Requirements**
-
+ 
 - **Status Indicators**: Visual indicators (green/red) showing completion status
-- **Direct Navigation**: Click-through to specific maintenance screens to resolve issues
 - **Refresh**: Real-time refresh of check statuses
-- **Export**: Export check results for external review
+- This screen is informational, the user needs to go back to the correct screens on their own to fix and upload more data
+- This screen gives the user insight as to make a decision whether to confirm the data or not 
 
 **Behaviour**
-
-- All tabs must show "green" (complete) status before proceeding to approvals
-- Clicking on an incomplete item navigates to the appropriate fix screen
+ 
+- These 3 tabs are all informational, confirm data button should always be visible to click
 - Check results update automatically when data is modified
-
+ 
 **API Endpoints**
-
+ 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/check-file-completeness` | Get file completeness checks |
 | GET | `/check-main-data-completeness` | Get main data completeness checks |
 | GET | `/check-other-data-completeness` | Get other data completeness checks |
+| POST | '/approve-logs/{ReportBatchId}' | Confirm the data |
 
 ---
 

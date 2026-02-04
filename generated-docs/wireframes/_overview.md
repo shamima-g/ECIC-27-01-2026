@@ -21,9 +21,9 @@ This document provides a comprehensive set of wireframes for the InvestInsight p
 | 2 | Portfolio Imports Dashboard | Matrix view of portfolio files with clickable status icons | `screen-2-portfolio-imports.md` |
 | 3 | Other Imports Dashboard | List view of non-portfolio files with status icons | `screen-3-other-imports.md` |
 | 4 | File Upload Modal | Popup for file management, upload, and error viewing | `screen-4-file-upload-modal.md` |
-| 5 | Data Confirmation - Main File Checks | Validates portfolio and custodian data completeness | `screen-5-data-confirmation-main.md` |
-| 6 | Data Confirmation - Other Checks | Validates reference data completeness with click-through | `screen-6-data-confirmation-other.md` |
-| 7 | Data Confirmation - Portfolio Re-imports | Manages re-import status for portfolios | `screen-7-data-confirmation-reimports.md` |
+| 5 | Data Confirmation - File Checks | Shows file upload status summary with expected vs actual file counts | `screen-5-data-confirmation-file-checks.md` |
+| 6 | Data Confirmation - Main Data Checks | Verifies portfolio manager data, custodian data, and Bloomberg holdings completeness | `screen-6-data-confirmation-main-checks.md` |
+| 7 | Data Confirmation - Other Checks | Validates reference data completeness (index prices, instruments, ratings, durations, betas) | `screen-7-data-confirmation-other-checks.md` |
 | 8 | Instruments Maintenance | CRUD operations for instrument master data | `screen-8-instruments-maintenance.md` |
 | 9 | Index Prices Maintenance | Manage index prices with history and quick pop-up entry | `screen-9-index-prices-maintenance.md` |
 | 10 | Durations & YTM Maintenance | Maintain duration/YTM data with outstanding list | `screen-10-durations-maintenance.md` |
@@ -55,10 +55,10 @@ Start Page
     │   └─→ Other Imports Dashboard
     │       └─→ File Upload Modal
     ├─→ Data Confirmation
+    │   ├─→ File Checks Tab
     │   ├─→ Main Data Checks Tab
-    │   ├─→ Other Checks Tab
-    │   │   └─→ Maintenance Screens (to fix issues)
-    │   └─→ Portfolio Re-imports Tab
+    │   └─→ Other Checks Tab
+    │       └─→ Maintenance Screens (to fix issues)
     ├─→ Data Maintenance
     │   ├─→ Instruments Maintenance
     │   ├─→ Index Prices Maintenance
@@ -92,6 +92,42 @@ Start Page
         ├─→ Asset Managers
         └─→ Benchmarks
 ```
+
+---
+
+## Epic 3: Data Confirmation & Validation Details
+
+### Overview
+The Data Confirmation & Validation feature provides a consolidated view for users to verify that all required data is complete and valid before proceeding to the approval workflow. The screen uses a tabbed interface to organize different types of validation checks.
+
+### Tab Structure
+1. **File Checks Tab** - Shows file upload status summary with expected vs actual file counts by source
+2. **Main Data Checks Tab** - Verifies portfolio manager data, custodian data, and Bloomberg holdings completeness
+3. **Other Checks Tab** - Validates reference data completeness (index prices, instruments, ratings, durations, betas)
+
+### Shared Components
+- **Tab Navigation**: All three tabs share the same page with consistent tab navigation at the top
+- **Confirm Data Button**: Always visible and enabled on all tabs, positioned at bottom-right
+- **Refresh Icon**: Each tab has a refresh button to update check statuses in real-time
+- **Status Indicators**: Consistent use of ✓ (green) for complete and ✗ (red) for incomplete
+- **Legend**: Each tab includes a legend explaining the status indicators
+
+### Data Flow
+1. User navigates to Data Confirmation screen
+2. Page loads with File Checks tab active by default
+3. Each tab fetches its data from respective API endpoint on load
+4. User can click refresh icon to update data without page reload
+5. User can switch between tabs to review different validation types
+6. User clicks Confirm Data when ready to proceed (regardless of completeness status)
+7. System advances workflow to First Approval (L1) phase
+
+### Informational Nature
+- All three tabs are **read-only/informational** - no direct editing
+- Users must navigate to other screens to fix identified issues:
+  - File Checks issues → File Upload screens
+  - Main Data Checks issues → File Upload screens
+  - Other Checks issues → Maintenance screens (Instruments, Index Prices, Ratings, Durations, Betas)
+- Guidance text on Other Checks tab helps users understand where to go
 
 ---
 
@@ -167,6 +203,11 @@ Based on the Shadcn UI component library:
 - **Minimum width**: 1280px recommended for data grids
 - **Tablet support**: Simplified views for 768px+ with stacked layouts
 - **Mobile**: Read-only views only; full editing requires desktop
+- **Data Confirmation specific**:
+  - Tables should be scrollable horizontally on smaller screens
+  - Tab labels may stack or use dropdown on mobile devices
+  - Confirm Data button remains fixed and accessible at all screen sizes
+  - Status indicators should remain visible in table cells even when condensed
 
 ### Accessibility
 
@@ -174,6 +215,11 @@ Based on the Shadcn UI component library:
 - **Screen reader support**: Use proper ARIA labels and roles
 - **Color contrast**: Ensure WCAG AA compliance for status indicators
 - **Focus indicators**: Clear focus states for all interactive elements
+- **Data Confirmation specific**:
+  - Tab navigation should support keyboard navigation (arrow keys, tab key)
+  - Status indicators should include aria-labels ("Complete" / "Incomplete")
+  - Tables should have proper table headers and role attributes
+  - Confirm Data button should be keyboard accessible and have clear focus state
 
 ---
 
@@ -193,6 +239,6 @@ Based on the Shadcn UI component library:
 ## References
 
 - **Product Specification**: `documentation/InvestInsight-Product-Guide-v2.md`
-- **API Specification**: (If available in `documentation/` directory)
+- **API Specification**: `documentation/MonthlyAPIDefinition.yaml`, `documentation/FileImporterAPIDefinition.yaml`, `documentation/DataMaintenanceAPIDefinition.yaml`
 - **Component Library**: Shadcn UI via MCP server
 - **Tech Stack**: Next.js 16 + React 19 + TypeScript 5 + Tailwind CSS 4
